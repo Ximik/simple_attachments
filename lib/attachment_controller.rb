@@ -2,9 +2,9 @@ module AttachmentController
   def attachment_controller_for(attachment_symbol, options={})
     @attachment_model = attachments_symbol.to_s.classify.constantize
     @@options = options
-    send :include, ControllerMethods
+    send :include, SimpleAttachmentsControllerMethods
   end
-  module ControllerMethods
+  module SimpleAttachmentsControllerMethods
     def create
       @attachment = @attachment_model.new
       @attachment.file = params[:file]
@@ -12,13 +12,10 @@ module AttachmentController
       render :json => @attachment.errors.full_messages
     end
     def show
-      @attachment = @attachment_model.find_by_id params[:id]
-      if @attachment.nil?
-      else
-        options = @@options
-        options[:type] = @attachment.mimetype
-        send_file @attachment.filepath, options
-      end
+      @attachment = @attachment_model.find_by_id(params[:id]) || raise ActionController::RoutingError.new('Not Found')
+      options = @@options
+      options[:type] = @attachment.mimetype
+      send_file @attachment.filepath, options
     end
     def destroy
       @attachment = @attachment_model.find_by_id params[:id]

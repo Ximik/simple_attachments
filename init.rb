@@ -1,7 +1,7 @@
 require 'attachment_model'
-ActiveRecord::Base.extend AttachmentModule
+ActiveRecord::Base.extend AttachmentModel
 require 'container_model'
-ActiveRecord::Base.extend ContainerModule
+ActiveRecord::Base.extend ContainerModel
 require 'attachment_controller'
 ApplicationController.extend AttachmentController
 require 'form_builder_helpers'

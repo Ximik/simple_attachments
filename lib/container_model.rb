@@ -1,4 +1,4 @@
-module ContainerModule
+module ContainerModel
   def has_many_attachments(attachments_symbol)
     has_many attachments_symbol, :dependent => :destroy
     attachment_model = attachments_symbol.to_s.classify.constantize
