@@ -17,15 +17,6 @@ module AttachmentController
       else
         options = @@options
         options[:type] = @attachment.mimetype
-      @attachment.save
-      render :json => @attachment.errors.full_messages
-    end
-    def show
-      @attachment = @attachment_model.find_by_id params[:id]
-      if @attachment.nil?
-      else
-        options = @@options
-        options[:type] = @attachment.mimetype
         send_file @attachment.filepath, options
       end
     end
