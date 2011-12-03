@@ -7,15 +7,21 @@ module AttachmentModel
       case key
       when :mimetype
         validate :is_mimetype_allowed?
-        @@allowed_types = value
+        class << self
+          attr_accessor :allowed_types
+        end
+        self.allowed_types = value
         send(:define_method, 'is_mimetype_allowed?') do
-          errors.add_to_base t(:mimetype_isnt_allowed) % mimetype unless @@allowed_types.include? mimetype or mimetype.nil?
+          errors[:base] << I18n.t(:simple_attachments, :mimetype_isnt_allowed) unless self.class.allowed_types.include? mimetype or mimetype.nil?
         end
       when :maxsize
         validate :is_size_ok?
-        @@max_filesize = value
+        class << self
+          attr_accessor :max_filesize
+        end
+        self.max_filesize = value
         send(:define_method, 'is_size_ok?') do
-          errors.add_to_base t(:filesize_is_too_big) % @filesize if @fizesize > @@max_filesize or @filesize.nil?
+          errors[:base] << I18n.t(:simple_attachments, :file_is_too_large) if @fizesize > self.class.max_filesize or @filesize.nil?
         end
       end
     end
@@ -25,7 +31,7 @@ module AttachmentModel
   module SimpleAttachmentsAttachmentMethods
     def file=(file)
       if file.nil?
-        errors.add_to_base t(:file_loading_error)
+        errors.add_to_base I18n.t(:simple_attachments, :uploading_error)
         @filesize = nil
       else
         @file = file
@@ -35,10 +41,10 @@ module AttachmentModel
       end
     end
     def file_path
-      Rails.root.join('uploads', Time.now.to_f.to_s.concat('.').concat(File.basename(@file.filename))).to_s
+      Rails.root.join('uploads', Time.now.to_f.to_s.concat('.').concat(File.basename(@file.original_filename))).to_s
     end
     def save_file
-      File.open(filepath) do |file|
+      File.open(filepath, 'w') do |file|
         file.write @file.read
       end
     end
