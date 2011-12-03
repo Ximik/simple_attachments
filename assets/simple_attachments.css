@@ -1,0 +1,26 @@
+.simple_attachments_main_div {
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+}
+.simple_attachments_add_file_div {
+  cursor: pointer;
+  display: inline-block;
+}
+.simple_attachments_input {
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  overflow: hidden;
+  opacity: 0;
+  zoom: 1;
+  z-index: 1;
+  filter: alpha(opacity=0); /* for IE */
+  font-size: 500px;
+}
+.simple_attachments_iframe {
+  width: 0;
+  height: 0;
+  border: none;
+}
