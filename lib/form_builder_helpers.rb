@@ -1,6 +1,13 @@
-module FormBuilderHelpers
-  def multiple_file_field(method)
-    @template.tag('div', :class => 'simple_attachments_add_div')
-    @template.file_field(@object_name, method, :class => 'simple_attachments_file_field')
+class ActionView::Helpers::FormBuilder
+  def multiple_file_field(method, options={})
+    options[:text] = '' if options[:text].nil?
+    @template.content_tag(:div,
+                          @template.content_tag(:div, options[:text], :class => 'simple_attachments_add_file_div'),
+                          :class => 'simple_attachments_main_div',
+                          :data => {:container => @object_name,
+                                    :attachments => method,
+                                    :new_attachment => @template.send(method.to_s.concat('_path'))
+                          }
+    )
   end
 end
