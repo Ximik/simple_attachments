@@ -12,7 +12,7 @@ module AttachmentModel
         end
         self.allowed_types = value
         send(:define_method, 'is_mimetype_allowed?') do
-          errors[:base] << I18n.t(:simple_attachments, :mimetype_isnt_allowed) unless self.class.allowed_types.include? mimetype or mimetype.nil?
+          errors[:base] << I18n.t('simple_attachments.mimetype_isnt_allowed') unless self.class.allowed_types.include? mimetype or mimetype.nil?
         end
       when :maxsize
         validate :is_size_ok?
@@ -21,7 +21,7 @@ module AttachmentModel
         end
         self.max_filesize = value
         send(:define_method, 'is_size_ok?') do
-          errors[:base] << I18n.t(:simple_attachments, :file_is_too_large) if @fizesize > self.class.max_filesize or @filesize.nil?
+          errors[:base] << I18n.t('simple_attachments.file_is_too_large') if @fizesize > self.class.max_filesize or @filesize.nil?
         end
       end
     end
@@ -31,7 +31,7 @@ module AttachmentModel
   module SimpleAttachmentsAttachmentMethods
     def file=(file)
       if file.nil?
-        errors.add_to_base I18n.t(:simple_attachments, :uploading_error)
+        errors[:base] << I18n.t('simple_attachments.uploading_error')
         @filesize = nil
       else
         @file = file

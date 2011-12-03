@@ -1,6 +1,5 @@
 en:
   simple_attachments:
-    mimetype_isnt_allowed: Filetype is not allowed
-    file_is_too_large: File is too large
-    uploading_error: Something went wrong while file uploading. Try again.
-    
+    mimetype_isnt_allowed: "Filetype is not allowed"
+    file_is_too_large: "File is too large"
+    uploading_error: "Something went wrong while file uploading. Try again."
