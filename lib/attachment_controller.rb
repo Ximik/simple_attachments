@@ -17,18 +17,22 @@ module SimpleAttachmentsController
       @attachment.file = params[:file]
       @attachment.save
       if @attachment.new_record?
-        render :text => '<div>error</div>'.concat @attachment.errors.full_messages.map{|e| "<div>#{e}</div>"}.join
+        succeed = false
+        data = @attachment.errors.full_messages
       else
-        id = @attachment.id
-        render :text => "<div>#{id}</div><div>#{@attachment.filesize}</div><div>#{send(self.class.attachment_url id}</div>"
+        succeed = true
+        data = @attachment.serializable_hash
+        attachment.delete('filepath')
       end
+      render :text => {"succeed" => succeed, "data" => data}
     end
     def show
       @attachment = self.class.attachment_model.find_by_id(params[:id])
       raise ActionController::RoutingError.new('Not Found') if @attachment.nil?
       options = self.class.options
       options[:type] = @attachment.mimetype
-      send_file @attachment.filepath, self.class.options
+      options[:filename] = @attachment.filename
+      send_file @attachment.filepath, options
     end
     def destroy
       @attachment = self.class.attachment_model.find_by_id params[:id]

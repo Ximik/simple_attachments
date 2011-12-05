@@ -39,10 +39,11 @@ module AttachmentModel
         self.filepath = file_path
         self.mimetype = @file.content_type
         self.filesize = @file.tempfile.size
+        self.filename = File.basename(@file.original_filename) #IE hack
       end
     end
     def file_path
-      Rails.root.join('uploads', Time.now.to_f.to_s.concat('.').concat(File.basename(@file.original_filename))).to_s
+      Rails.root.join('uploads', Time.now.to_f.to_s.concat('.').concat(filename)).to_s
     end
     def save_file
       File.open(filepath, 'w') do |file|

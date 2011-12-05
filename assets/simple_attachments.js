@@ -23,17 +23,12 @@ function simple_attachments_add_input_file(div) {
       $(this).load(function() {
         var body = $(this).contents().find("body");
         var options = $(this).data("options");
-        var divs = body.children("div");
-        if (divs.first().text() == "error") {
-          var errors_array = []
-          errors.each(function() {
-            errors_array.push($(this).text());
-          });
-          options.div.trigger("error", errors_array);
+        var answer = jQuery.parseJSON($(this).contents().find("body").text());
+        if (answer.succeed) {
+          answer.input = $("<input>").attr("type", "hidden").attr("name", options.input_name).attr("value", answer.id);
+          options.div.trigger("uploaded", answer.data);
         }else{
-          var input = $("<input>").attr("type", "hidden").attr("name", options.input_name).attr("value", divs.get(0).text());
-          var url = div.get(1).text();
-          options.div.trigger("uploaded", [input, url]);
+          options.div.trigger("error", answer.data);
         }
         $(this).remove();
       });
