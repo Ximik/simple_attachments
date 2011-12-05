@@ -18,20 +18,22 @@ function simple_attachments_add_input_file(div) {
       form.appendTo($(this).contents().find("body"));
       input.appendTo(form);
       simple_attachments_add_input_file(options.div);
+      options.div.trigger("upload");
       $(this).off();
       $(this).load(function() {
         var body = $(this).contents().find("body");
         var options = $(this).data("options");
-        var errors = body.children("div");
-        if (errors.size()) {
+        var divs = body.children("div");
+        if (divs.first().text() == "error") {
           var errors_array = []
           errors.each(function() {
             errors_array.push($(this).text());
           });
-          options.div.trigger("upload_error", errors_array);
+          options.div.trigger("error", errors_array);
         }else{
-          var input = $("<input>").attr("type", "hidden").attr("name", options.input_name).attr("value", body.text());
-          input.appendTo(options.div);
+          var input = $("<input>").attr("type", "hidden").attr("name", options.input_name).attr("value", divs.get(0).text());
+          var url = div.get(1).text();
+          options.div.trigger("uploaded", [input, url]);
         }
         $(this).remove();
       });

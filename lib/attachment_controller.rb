@@ -3,9 +3,11 @@ module SimpleAttachmentsController
     skip_before_filter :verify_authenticity_token
     class << self
       attr_accessor :attachment_model
+      attr_accessor :attachment_helper
       attr_accessor :options
     end
     self.attachment_model = attachments_symbol.to_s.classify.constantize
+    self.attachment_helper = attachments_symbol.to_s.singularize.concat('_path')
     self.options = options
     send :include, SimpleAttachmentsControllerMethods
   end
@@ -15,9 +17,10 @@ module SimpleAttachmentsController
       @attachment.file = params[:file]
       @attachment.save
       if @attachment.new_record?
-        render :text => @attachment.errors.full_messages.map{|e| "<div>#{e}</div>"}.join
+        render :text => '<div>error</div>'.concat @attachment.errors.full_messages.map{|e| "<div>#{e}</div>"}.join
       else
-        render :text => @attachment.id
+        id = @attachment.id
+        render :text => "<div>#{id}</div><div>#{@attachment.filesize}</div><div>#{send(self.class.attachment_url id}</div>"
       end
     end
     def show
