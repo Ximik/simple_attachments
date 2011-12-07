@@ -16,15 +16,15 @@ module SimpleAttachmentsController
       @attachment = self.class.attachment_model.new
       @attachment.file = params[:file]
       @attachment.save
-      if @attachment.new_record?
+      if @attachment.errors.any?
         succeed = false
         data = @attachment.errors.full_messages
       else
         succeed = true
         data = @attachment.serializable_hash
-        attachment.delete('filepath')
+        data.delete('filepath')
       end
-      render :text => {"succeed" => succeed, "data" => data}
+      render :text => {"succeed" => succeed, "data" => data}.to_json
     end
     def show
       @attachment = self.class.attachment_model.find_by_id(params[:id])

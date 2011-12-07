@@ -4,6 +4,7 @@ class ActionView::Helpers::FormBuilder
     @template.content_tag(:div,
                           @template.content_tag(:div, options[:text], :class => 'simple_attachments_add_file_div'),
                           :class => 'simple_attachments_main_div',
+                          :id => 'simple_attachments_main_div_'.concat(@object_name).concat('_').concat(method.to_s),
                           :data => {:container => @object_name,
                                     :attachments => method,
                                     :new_attachment => @template.send(method.to_s.concat('_path'))

@@ -18,14 +18,13 @@ function simple_attachments_add_input_file(div) {
       form.appendTo($(this).contents().find("body"));
       input.appendTo(form);
       simple_attachments_add_input_file(options.div);
-      options.div.trigger("upload");
       $(this).off();
       $(this).load(function() {
         var body = $(this).contents().find("body");
         var options = $(this).data("options");
         var answer = jQuery.parseJSON($(this).contents().find("body").text());
         if (answer.succeed) {
-          answer.input = $("<input>").attr("type", "hidden").attr("name", options.input_name).attr("value", answer.id);
+          answer.data.input_tag = $("<input>").attr("type", "hidden").attr("name", options.input_name).attr("value", answer.data.id);
           options.div.trigger("uploaded", answer.data);
         }else{
           options.div.trigger("error", answer.data);

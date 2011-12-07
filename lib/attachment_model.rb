@@ -36,10 +36,10 @@ module AttachmentModel
         errors[:base] << I18n.t('simple_attachments.uploading_error')
       else
         @file = file
-        self.filepath = file_path
         self.mimetype = @file.content_type
         self.filesize = @file.tempfile.size
         self.filename = File.basename(@file.original_filename) #IE hack
+        self.filepath = file_path
       end
     end
     def file_path
