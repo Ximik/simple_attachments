@@ -1,16 +1,13 @@
-.simple_attachments_main_div {
-  cursor: pointer;
-  display: inline-block;
-  overflow: hidden;
-  position: relative;
-}
 .simple_attachments_add_file_div {
   cursor: pointer;
   display: inline-block;
+  position: relative;
+  overflow: hidden;
 }
 .simple_attachments_input {
   cursor: pointer;
   position: absolute;
+  top: -100px;
   right: 0;
   overflow: hidden;
   opacity: 0;

@@ -22,12 +22,12 @@ module SimpleAttachmentsController
       else
         succeed = true
         data = @attachment.serializable_hash
-        data.delete('filepath')
+        data['filepath'] = send self.class.attachment_helper, @attachment.id
       end
       render :text => {"succeed" => succeed, "data" => data}.to_json
     end
     def show
-      @attachment = self.class.attachment_model.find_by_id(params[:id])
+      @attachment = self.class.attachment_model.find_by_id params[:id]
       raise ActionController::RoutingError.new('Not Found') if @attachment.nil?
       options = self.class.options
       options[:type] = @attachment.mimetype
