@@ -7,7 +7,8 @@ class ActionView::Helpers::FormBuilder
                           :id => 'simple_attachments_main_div_'.concat(@object_name).concat('_').concat(method.to_s),
                           :data => {:container => @object_name,
                                     :attachments => method,
-                                    :new_attachment => @template.send(method.to_s.concat('_path'))
+                                    :new_attachment => @template.send(method.to_s.concat('_path')),
+                                    :attached => @object.send(@object.class.attachments).map{|a| a.serializable_hash}.to_json
                           }
     )
   end

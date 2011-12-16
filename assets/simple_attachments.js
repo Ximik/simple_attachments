@@ -2,7 +2,7 @@ function simple_attachments_add_input_file(div) {
   var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
   input.appendTo(div.find(".simple_attachments_add_file_div"));
   input.data("iframe_options", { new: div.attr("data-new-attachment"),
-                                 input_name: div.attr("data-container")+"["+div.attr("data-attachments")+"][]",
+                                 input_name: div.data("input_name"),
                                  div: div
                                });
   input.change(function() {
@@ -38,6 +38,13 @@ function simple_attachments_add_input_file(div) {
 
 $(function() {
   $("div.simple_attachments_main_div").each(function() {
+    $(this).data("input_name", $(this).attr("data-container")+"["+$(this).attr("data-attachments")+"][]");
+    var attached = $.parseJSON($(this).attr("data-attached"));
+    for (i in attached) {
+      var data = attached[i];
+      data.input_tag = $("<input>").attr("type", "hidden").attr("name", $(this).data("input_name")).attr("value", data.id);
+      $(this).trigger("uploaded", data);
+    }
     simple_attachments_add_input_file($(this));
   });
 })

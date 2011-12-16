@@ -53,5 +53,10 @@ module AttachmentModel
     def destroy_file
       File.delete filepath
     end
+    def serializable_hash
+      data = super
+      data['filepath'] = Rails.application.routes.url_helpers.send self.class.to_s.underscore.concat('_path'), id
+      data
+    end
   end
 end

@@ -3,11 +3,9 @@ module SimpleAttachmentsController
     skip_before_filter :verify_authenticity_token
     class << self
       attr_accessor :attachment_model
-      attr_accessor :attachment_helper
       attr_accessor :options
     end
     self.attachment_model = attachments_symbol.to_s.classify.constantize
-    self.attachment_helper = attachments_symbol.to_s.singularize.concat('_path')
     self.options = options
     send :include, SimpleAttachmentsControllerMethods
   end
@@ -22,7 +20,6 @@ module SimpleAttachmentsController
       else
         succeed = true
         data = @attachment.serializable_hash
-        data['filepath'] = send self.class.attachment_helper, @attachment.id
       end
       render :text => {"succeed" => succeed, "data" => data}.to_json
     end
