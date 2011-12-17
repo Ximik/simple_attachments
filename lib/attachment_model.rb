@@ -43,15 +43,18 @@ module AttachmentModel
       end
     end
     def file_path
-      Rails.root.join('uploads', Time.now.to_f.to_s.concat('.').concat(filename)).to_s
+      Time.now.to_f.to_s.concat('.').concat(filename)
+    end
+    def full_file_path
+      Rails.root.join('uploads', filepath).to_s
     end
     def save_file
-      File.open(filepath, 'w') do |file|
+      File.open(full_file_path, 'w') do |file|
         file.write @file.read
       end
     end
     def destroy_file
-      File.delete filepath
+      File.delete full_file_path
     end
     def serializable_hash
       data = super

@@ -1,50 +1,62 @@
-function simple_attachments_add_input_file(div) {
-  var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
-  input.appendTo(div.find(".simple_attachments_add_file_div"));
-  input.data("iframe_options", { new: div.attr("data-new-attachment"),
-                                 input_name: div.data("input_name"),
-                                 div: div
-                               });
-  input.change(function() {
-    $(this).off();
-    var iframe = $("<iframe>").attr("class", "simple_attachments_iframe");
-    iframe.appendTo($("body"));
-    iframe.data("options", $(this).data("iframe_options"));
-    iframe.data("input", $(this));
-    iframe.load(function() {
-      var options = $(this).data("options");
-      var input = $(this).data("input");
-      var form = $("<form>").attr("method", "post").attr("action", options.new).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
-      form.appendTo($(this).contents().find("body"));
-      input.appendTo(form);
-      $(this).off();
-      $(this).load(function() {
-        var body = $(this).contents().find("body");
-        var options = $(this).data("options");
-        var answer = $.parseJSON($(this).contents().find("body").text());
-        if (answer.succeed) {
-          answer.data.input_tag = $("<input>").attr("type", "hidden").attr("name", options.input_name).attr("value", answer.data.id);
-          options.div.trigger("uploaded", [answer.data]);
-        }else{
-          options.div.trigger("error", [answer.data]);
-        }
-        $(this).remove();
-      });
-      simple_attachments_add_input_file(options.div);
-      form.submit();
-    });
-  });
-}
-
 $(function() {
   $("div.simple_attachments_main_div").each(function() {
     $(this).data("input_name", $(this).attr("data-container")+"["+$(this).attr("data-attachments")+"][]");
+    $(this).data("new_path", $(this).attr("data-new-attachment"));
+    this.newField_pt = function() {
+      var field = this.newField();
+      $(field).data("div", $(this));
+      field.setData_pt = function(data) {
+        data.hidden_input = $("<input>").attr("type", "hidden").attr("name", $(this).data("div").data("input_name")).attr("value", data.id);
+        var destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
+        destroy_link.data("field", $(this));
+        destroy_link.click(function() {
+          $.post(this.href, { _method: "delete" });
+          $(this).data("field").remove();
+          return false;
+        });
+        data.destroy_link = destroy_link;
+        this.setData(data);
+      }
+      return field;
+    }
+    this.addInputField = function() {
+      var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
+      input.appendTo($(this).find(".simple_attachments_add_file_div"));
+      input.data("div", $(this));
+      input.change(function() { //When user clicks the add file button
+        $(this).off();
+        var iframe = $("<iframe>").attr("class", "simple_attachments_iframe");
+        iframe.appendTo($("body"));
+        iframe.data("input", $(this));
+        iframe.data("field", $(this).data("div").get(0).newField_pt());
+        iframe.load(function() { //When iframe is ready for file uploading
+          var input = $(this).data("input");
+          var div = input.data("div");
+          var form = $("<form>").attr("method", "post").attr("action", div.data("new_path")).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
+          form.appendTo($(this).contents().find("body"));
+          input.appendTo(form);
+          $(this).off();
+          $(this).load(function() { //When file uploading is ended
+            var field = $(this).data("field");
+            var answer = $.parseJSON($(this).contents().find("body").text());
+            if (answer.succeed) {
+              field.setData_pt(answer.data);
+            }else{
+              field.raiseErrors(answer.data);
+            }
+            $(this).remove();
+          });
+          div.get(0).addInputField();
+          form.submit();
+        });
+      });
+    }
+    this.addInputField();
     var attached = $.parseJSON($(this).attr("data-attached"));
     for (i in attached) {
       var data = attached[i];
-      data.input_tag = $("<input>").attr("type", "hidden").attr("name", $(this).data("input_name")).attr("value", data.id);
-      $(this).trigger("uploaded", data);
+      var field = this.newField_pt();
+      field.setData_pt(attached[i]);
     }
-    simple_attachments_add_input_file($(this));
   });
 })
