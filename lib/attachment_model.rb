@@ -49,16 +49,14 @@ module AttachmentModel
       Rails.root.join('uploads', filepath).to_s
     end
     def save_file
-      File.open(full_file_path, 'w') do |file|
-        file.write @file.read
-      end
+      File.open(full_file_path, 'w') { |file| file.write @file.read } unless @file.nil?
     end
     def destroy_file
       File.delete full_file_path
     end
     def serializable_hash
       data = super
-      data['filepath'] = Rails.application.routes.url_helpers.send self.class.to_s.underscore.concat('_path'), id
+      data['filepath'] = Rails.application.routes.url_helpers.send(self.class.to_s.underscore.concat('_path'), id)
       data
     end
   end
