@@ -3,6 +3,10 @@ module AttachmentModel
     belongs_to container_symbol
     before_save :save_file
     after_destroy :destroy_file
+    class << self
+      attr_accessor :container_symbol
+    end
+    self.container_symbol = container_symbol.to_s
     options.each_pair do |key, value|
       case key
       when :mimetype
@@ -58,6 +62,12 @@ module AttachmentModel
       data = super
       data['filepath'] = Rails.application.routes.url_helpers.send(self.class.to_s.underscore.concat('_path'), id)
       data
+    end
+    def container
+      send self.class.container_symbol
+    end
+    def container_id=(id)
+      send self.class.container_symbol.concat('_id='), id
     end
   end
 end

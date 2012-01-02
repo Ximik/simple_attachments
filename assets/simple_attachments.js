@@ -27,14 +27,16 @@ $(function() {
         $(this).off();
         var iframe = $("<iframe>").attr("class", "simple_attachments_iframe");
         iframe.appendTo($("body"));
-        iframe.data("input", $(this));
+        iframe.data("inputs", [ $(this),
+                                $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", $(this).data("div").attr("data-container-id"))
+                              ]);
         iframe.data("field", $(this).data("div").get(0).newField_pt());
         iframe.load(function() { //When iframe is ready for file uploading
-          var input = $(this).data("input");
+          var inputs = $(this).data("inputs");
           var div = input.data("div");
           var form = $("<form>").attr("method", "post").attr("action", div.data("new_path")).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
           form.appendTo($(this).contents().find("body"));
-          input.appendTo(form);
+          for (i in inputs) inputs[i].appendTo(form);
           $(this).off();
           $(this).load(function() { //When file uploading is ended
             var field = $(this).data("field");
@@ -58,5 +60,7 @@ $(function() {
       var field = this.newField_pt();
       field.setData_pt(attached[i]);
     }
+    var data = $.parseJSON($(this).attr("data-other"));
+    this.init(data);
   });
 })
