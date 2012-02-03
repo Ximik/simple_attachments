@@ -2,6 +2,7 @@
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
+  s.name        = 'simple_attachments'
 
   s.files        = Dir['lib/**/*']
   s.require_path = 'lib'
