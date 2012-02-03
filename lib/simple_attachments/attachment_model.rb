@@ -1,4 +1,4 @@
-module AttachmentModel
+module SimpleAttachments::AttachmentModel
   def attached_to(container_symbol, options={})
     belongs_to container_symbol
     before_save :save_file

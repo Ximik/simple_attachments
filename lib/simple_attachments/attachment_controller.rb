@@ -1,4 +1,4 @@
-module SimpleAttachmentsController
+module SimpleAttachments::AttachmentsController
   def attachment_controller_for(attachments_symbol, options={})
     skip_before_filter :verify_authenticity_token
     class << self
@@ -7,10 +7,10 @@ module SimpleAttachmentsController
     end
     self.attachment_model = attachments_symbol.to_s.classify.constantize
     self.options = options
-    send :include, SimpleAttachmentsControllerMethods
+    send :include, ControllerMethods
   end
 
-  module SimpleAttachmentsControllerMethods
+  module ControllerMethods
     def create
       @attachment = self.class.attachment_model.new
       @attachment.file = params[:file]

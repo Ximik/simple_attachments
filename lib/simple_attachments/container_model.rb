@@ -1,4 +1,4 @@
-module ContainerModel
+module SimpleAttachments::ContainerModel
   def has_many_attachments(attachments_symbol)
     has_many attachments_symbol, :dependent => :destroy
     class << self
