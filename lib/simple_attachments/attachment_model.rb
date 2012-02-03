@@ -4,9 +4,9 @@ module SimpleAttachments::AttachmentModel
     before_save :save_file
     after_destroy :destroy_file
     class << self
-      attr_accessor :container_symbol
+      attr_accessor :container_name
     end
-    self.container_symbol = container_symbol.to_s
+    self.container_name = container_name.to_s
     options.each_pair do |key, value|
       case key
       when :mimetype
@@ -65,10 +65,10 @@ module SimpleAttachments::AttachmentModelMethodes
     data
   end
   def container
-    send self.class.container_symbol
+    send self.class.container_name
   end
   def container_id=(id)
-    send self.class.container_symbol.concat('_id='), id
+    send self.class.container_name.concat('_id='), id
   end
 end
 

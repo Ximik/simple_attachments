@@ -9,6 +9,7 @@ module SimpleAttachments::AttachmentsController
     self.options = options
     send :include, ::SimpleAttachments::AttachmentsControllerMethods
   end
+end
 
 module SimpleAttachments::AttachmentsControllerMethods
   def create
@@ -41,4 +42,3 @@ module SimpleAttachments::AttachmentsControllerMethods
 end
 
 ActionController::Base.extend SimpleAttachments::AttachmentsController
-

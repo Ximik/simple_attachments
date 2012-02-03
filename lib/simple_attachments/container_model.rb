@@ -16,4 +16,4 @@ module SimpleAttachments::ContainerModel
   end
 end
 
-ActiveRecord::Base.extend ContainerModel
+ActiveRecord::Base.extend SimpleAttachments::ContainerModel
