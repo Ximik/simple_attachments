@@ -1,4 +1,6 @@
 module SimpleAttachments
+  class Engine < ::Rails::Engine
+  end
 end
 
 require 'simple_attachments/attachment_model'
