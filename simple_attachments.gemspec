@@ -5,7 +5,6 @@ Gem::Specification.new do |s|
   s.name         = 'simple_attachments'
   s.version      = '0.1'
 
-  s.files        = Dir['lib/**/*']
   s.require_path = 'lib'
   s.requirements << 'none'
   s.required_ruby_version     = '>= 1.8.7'
