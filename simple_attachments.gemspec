@@ -3,7 +3,7 @@
 Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.name         = 'simple_attachments'
-  s.version      = '0.1'
+  s.version      = '0.0.1'
 
   s.require_path = 'lib'
   s.requirements << 'none'
