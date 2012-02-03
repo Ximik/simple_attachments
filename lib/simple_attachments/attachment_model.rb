@@ -6,7 +6,7 @@ module SimpleAttachments::AttachmentModel
     class << self
       attr_accessor :container_name
     end
-    self.container_name = container_name.to_s
+    self.container_name = container_symbol.to_s
     options.each_pair do |key, value|
       case key
       when :mimetype
