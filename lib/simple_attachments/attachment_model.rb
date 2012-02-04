@@ -5,7 +5,7 @@ module SimpleAttachments::AttachmentModel
       after_destroy :destroy_file
       self.class.send(:attr_accessor, :container_name)
       self.class.send(:define_method, :validates_mimetype) do |types|
-        validates :mimetype, :inclusion => { :in => type, :message => I18n.t('simple_attachments.mimetype_isnt_allowed') }
+        validates :mimetype, :inclusion => { :in => types, :message => I18n.t('simple_attachments.mimetype_isnt_allowed') }
       end
       self.class.send(:define_method, :validates_filesize) do |options|
         options[:message] = I18n.t('simple_attachments.file_is_too_large')
@@ -38,10 +38,17 @@ module SimpleAttachments::AttachmentModelMethodes
     Rails.root.join('uploads', filepath).to_s
   end
   def save_file
-    File.open(full_file_path, 'w') { |file| file.write @file.read } unless @file.nil?
+    begin
+      File.open(full_file_path, 'w') { |file| file.write @file.read } unless @file.nil?
+    rescue
+      errors[:base] << I18n.t('simple_attachments.uploading_error')
+    end
   end
   def destroy_file
-    File.delete full_file_path
+    begin
+      File.delete full_file_path
+    rescue
+    end
   end
   def serializable_hash
     data = super
