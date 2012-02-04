@@ -12,8 +12,15 @@ end
 module SimpleAttachments::AttachmentsControllerMethods
   def create
     @attachment = self.class.attachment_model.new
-    @attachment.file = params[:file]
     @attachment.container_id = params[:container_id] unless params[:container_id] == 'null'
+    if self.class.attachment_model.method_defined? :container_types
+      if self.class.attachment_model.container_types.include? params[:container_type]
+        @attachment.container_type = params[:container_type].classify
+      else
+        raise ::ActiveRecord::ActiveRecordError
+      end
+    end
+    @attachment.file = params[:file]
     save_attachment
   end
   def show

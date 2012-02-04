@@ -28,7 +28,8 @@ $(function() {
         var iframe = $("<iframe>").attr("class", "simple_attachments_iframe");
         iframe.appendTo($("body"));
         iframe.data("inputs", [ $(this),
-                                $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", $(this).data("div").attr("data-container-id"))
+                                $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", $(this).data("div").attr("data-container-id")),
+                                $("<input>").attr("type", "hidden").attr("type", "container_type").attr("value", $(this).data("div").attr("data-container"))
                               ]);
         iframe.data("field", $(this).data("div").get(0).newField_pt());
         iframe.load(function() { //When iframe is ready for file uploading
