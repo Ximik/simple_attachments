@@ -3,17 +3,15 @@ module SimpleAttachments::AttachmentModel
     if options[:with] == :simple_attachments
       before_save :save_file
       after_destroy :destroy_file
-      class << self
-        attr_accessor :container_name
-      end
-      self.container_name = name.to_s
-      send(:define_method, :validates_mimetype) do |types|
+      self.class.send(:attr_accessor, :container_name)
+      self.class.send(:define_method, :validates_mimetype) do |types|
         validates :mimetype, :inclusion => { :in => type, :message => I18n.t('simple_attachments.mimetype_isnt_allowed') }
       end
-      send(:define_method, :validates_filesize) do |options|
+      self.class.send(:define_method, :validates_filesize) do |options|
         options[:message] = I18n.t('simple_attachments.file_is_too_large')
         validates :filesize, :numericality => options
       end
+      self.container_name = name.to_s
       send :include, ::SimpleAttachments::AttachmentModelMethodes
       options.delete :with
     end
