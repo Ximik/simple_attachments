@@ -48,7 +48,7 @@ module SimpleAttachments::AttachmentModelMethodes
     end
   end
   def file_path
-    Time.now.to_f.to_s.concat('.').concat(filename)
+    "#{Time.now.to_f}.#{filename}"
   end
   def full_file_path
     Rails.root.join('uploads', filepath).to_s
@@ -68,7 +68,7 @@ module SimpleAttachments::AttachmentModelMethodes
     send self.class.container_name
   end
   def container_id=(id)
-    send self.class.container_name.concat('_id='), id
+    send self.class.container_name + '_id=', id
   end
 end
 
