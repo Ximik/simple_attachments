@@ -1,37 +1,16 @@
 module SimpleAttachments::AttachmentModel
-  def attached_to(container_symbol, options={})
-    belongs_to container_symbol
-    before_save :save_file
-    after_destroy :destroy_file
-    class << self
-      attr_accessor :container_name
-    end
-    self.container_name = container_symbol.to_s
-    options.each_pair do |key, value|
-      case key
-      when :mimetype
-        validate :is_mimetype_allowed?
-        class << self
-          attr_accessor :allowed_types
-        end
-        self.allowed_types = value
-        send(:define_method, 'is_mimetype_allowed?') do
-          return if mimetype.nil?
-          errors[:base] << I18n.t('simple_attachments.mimetype_isnt_allowed') unless self.class.allowed_types.include? mimetype
-        end
-      when :maxsize
-        validate :is_size_ok?
-        class << self
-          attr_accessor :maxsize
-        end
-        self.maxsize = value
-        send(:define_method, 'is_size_ok?') do
-          return if filesize.nil?
-          errors[:base] << I18n.t('simple_attachments.file_is_too_large') if filesize > self.class.maxsize
-        end
+  def belongs_to(name, options = {})
+    if options[:with] == :simple_attachments
+      before_save :save_file
+      after_destroy :destroy_file
+      class << self
+        attr_accessor :container_name
       end
+      self.container_name = name.to_s
+      send :include, ::SimpleAttachments::AttachmentModelMethodes
+      options.delete :with
     end
-    send :include, ::SimpleAttachments::AttachmentModelMethodes
+    super
   end
 end
 
@@ -69,6 +48,13 @@ module SimpleAttachments::AttachmentModelMethodes
   end
   def container_id=(id)
     send self.class.container_name + '_id=', id
+  end
+  def self.validates_mimetype(types)
+    validates :mimetype, :inclusion => { :in => type, :message => I18n.t('simple_attachments.mimetype_isnt_allowed') }
+  end
+  def self.validates_filesize(options)
+    options[:message] = I18n.t('simple_attachments.file_is_too_large')
+    validates :filesize, :numericality => { options }
   end
 end
 
