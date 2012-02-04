@@ -7,6 +7,13 @@ module SimpleAttachments::AttachmentModel
         attr_accessor :container_name
       end
       self.container_name = name.to_s
+      send(:define_method, :validates_mimetype) do |types|
+        validates :mimetype, :inclusion => { :in => type, :message => I18n.t('simple_attachments.mimetype_isnt_allowed') }
+      end
+      send(:define_method, :validates_filesize) do |options|
+        options[:message] = I18n.t('simple_attachments.file_is_too_large')
+        validates :filesize, :numericality => options
+      end
       send :include, ::SimpleAttachments::AttachmentModelMethodes
       options.delete :with
     end
@@ -48,13 +55,6 @@ module SimpleAttachments::AttachmentModelMethodes
   end
   def container_id=(id)
     send self.class.container_name + '_id=', id
-  end
-  def self.validates_mimetype(types)
-    validates :mimetype, :inclusion => { :in => type, :message => I18n.t('simple_attachments.mimetype_isnt_allowed') }
-  end
-  def self.validates_filesize(options)
-    options[:message] = I18n.t('simple_attachments.file_is_too_large')
-    validates :filesize, :numericality => { options }
   end
 end
 

@@ -12,6 +12,7 @@ module SimpleAttachments::ContainerModel
           attachment = self.class.attachment_model.find_by_id attachment_id
           send(self.class.attachments).push(attachment) unless attachment.nil?
         end
+      end
       options.delete :with
     end
     super
