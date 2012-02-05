@@ -17,12 +17,10 @@ module SimpleAttachments::AttachmentsControllerMethods
         container = params[:container_type].classify.constantize.find params[:container_id]
         container.add_attachment @attachment
       rescue
-        render_answer(false, I18n.t('simple_attachments.uploading_error'))
+        render_answer(false, I18n.t('simple_attachments.uploading_error')) and return
       end
-      save_attachment
-    else
-      save_attachment
     end
+    save_attachment
   end
   def show
     find_attachment
