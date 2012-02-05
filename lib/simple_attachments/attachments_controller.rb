@@ -15,9 +15,9 @@ module SimpleAttachments::AttachmentsControllerMethods
     if params[:container_id] != 'null'
       begin
         container = params[:container_type].classify.constantize.find params[:container_id]
-        container.add_attachement @attachment
+        container.add_attachment @attachment
       rescue
-        render_answer(false, I18n.t(simple_attachments.uploading_error))
+        render_answer(false, I18n.t('simple_attachments.uploading_error'))
       end
       save_attachment
     else
