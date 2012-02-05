@@ -58,9 +58,6 @@ module SimpleAttachments::AttachmentModelMethodes
   def container
     send self.class.container_name
   end
-  def container_id=(id)
-    send self.class.container_name + '_id=', id
-  end
 end
 
 ActiveRecord::Base.extend SimpleAttachments::AttachmentModel
