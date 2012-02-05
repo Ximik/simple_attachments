@@ -11,7 +11,7 @@ module SimpleAttachments::ContainerModel
           send(self.class.attachments).push(attachment) unless attachment.nil?
         end
       end
-      add_polymorphic if options[:polymorphic]
+      add_polymorphic if options[:as]
       options.delete :with
     end
     super
@@ -26,7 +26,7 @@ module SimpleAttachments::ContainerModel
         attachment = self.class.attachment_model.find_by_id attachment_id
         send(self.class.attachment + '=', attachment) unless attachment.nil?
       end
-      add_polymorphic if options[:polymorphic]
+      add_polymorphic if options[:as]
       options.delete :with
     end
     super
