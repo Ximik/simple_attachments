@@ -45,7 +45,7 @@ module SimpleAttachments::AttachmentsControllerMethods
   end
 
   def destroy
-    @attachment.destroy unless @attachment.nil?
+    @attachment.destroy if self.class.ajax
     render :nothing => true
   end
 
