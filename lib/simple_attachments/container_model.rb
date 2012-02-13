@@ -11,7 +11,7 @@ module SimpleAttachments::ContainerModel
       send(:define_method, self.attachments + '=') do |attachment_ids|
         attachment_ids.each do |attachment_id|
           attachment = self.class.attachment_model.find_by_id attachment_id
-          add_attachment attachment
+          add_attachment attachment if attachment.container.nil?
         end
       end
       options.delete :with
@@ -29,7 +29,7 @@ module SimpleAttachments::ContainerModel
       end
       send(:define_method, self.attachment + '=') do |attachment_ids|
         attachment = self.class.attachment_model.find_by_id attachment_id
-        add_attachment attachment
+        add_attachment attachment if attachment.container.nil?
       end
       options.delete :with
     end

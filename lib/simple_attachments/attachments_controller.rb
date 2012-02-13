@@ -2,9 +2,15 @@ module SimpleAttachments::AttachmentsController
   def attachment_controller_for(attachments_symbol, options={})
     skip_before_filter :verify_authenticity_token
     self.class.send(:attr_accessor, :attachment_model)
-    self.class.send(:attr_accessor, :options)
+    self.class.send(:attr_accessor, :ajax)
+    self.class.send(:attr_accessor, :sendfile)
     self.attachment_model = attachments_symbol.to_s.classify.constantize
-    self.options = options
+    if options[:ajax].nil?
+      self.ajax = options[:ajax]
+    else
+      self.ajax = true
+    end
+    self.sendfile = options[:sendfile]
     send :include, ::SimpleAttachments::AttachmentsControllerMethods
   end
 end
@@ -12,21 +18,22 @@ end
 module SimpleAttachments::AttachmentsControllerMethods
   def create
     @attachment = self.class.attachment_model.new
-    if params[:container_id] != 'null'
+    if params[:container_id] != 'null' and self.class.ajax
       begin
         container = params[:container_type].classify.constantize.find params[:container_id]
         container.add_attachment @attachment
       rescue
-        render_answer(false, I18n.t('simple_attachments.uploading_error')) and return
+        render_answer(false, [I18n.t('simple_attachments.uploading_error')]) and return
       end
     end
     save_attachment
   end
   def show
     find_attachment
-    options = self.class.options
+    options = []
     options[:type] = @attachment.mimetype
     options[:filename] = @attachment.filename
+    options[self.class.sendfile] = true unless self.class.sendfile.nil?
     send_file @attachment.full_file_path, options
   end
   def update
