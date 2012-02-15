@@ -65,7 +65,7 @@ var simple_attachments = {
       $(this).off();
       var form = $(this).data("form");
       var object = $(this).data("object");
-      var field = input.data("field_fn")(object);
+      var field = $(this).data("field_fn")(object);
       object.addInput();
       simple_attachments.sendForm(form, inputs, field);
     });
