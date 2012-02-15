@@ -41,37 +41,6 @@ $(function() {
     var input_name = $(this).attr("data-container")+"["+$(this).attr("data-attachments")+"][]";
     var destroy = $(this).attr("destroy") == 'true' ? true : false;
     this.newField_pt = newField_pt(input_name, destroy);
-    //Creates new field with service data in it
-    this.newField_pt = function() {
-      //Create new field
-      var field = this.newField();
-      //Add service data
-      $(field).data("div", $(this));
-      field.setData_pt = function(data) {
-        //Prepare service data
-        data.hidden_input = $("<input>").attr("type", "hidden").attr("name", $(this).data("div").data("input_name")).attr("value", data.id);
-        var destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
-        destroy_link.data("field", $(this));
-        if ($(this).data("div").data("destroy") == 'true') {
-          destroy_link.click(function() {
-            //Delete record and field
-            $.post(this.href, { _method: "delete" });
-            $(this).data("field").remove();
-            return false;
-          });
-        }else{
-          destroy_link.click(function() {
-            //Delete only field
-            $(this).data("field").remove();
-            return false;
-          });
-        }
-        data.destroy_link = destroy_link;
-        //Call engine with service data
-        this.setData(data);
-      }
-      return field;
-    }
     //Creates input file field inside the div
     this.addInputField = function() {
       var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
