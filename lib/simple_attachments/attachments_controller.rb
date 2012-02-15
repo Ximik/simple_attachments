@@ -3,14 +3,8 @@ module SimpleAttachments::AttachmentsController
     skip_before_filter :verify_authenticity_token
     before_filter :load_attachment, :except => :create
     self.class.send(:attr_accessor, :attachment_model)
-    self.class.send(:attr_accessor, :ajax)
     self.class.send(:attr_accessor, :sendfile)
     self.attachment_model = attachments_symbol.to_s.classify.constantize
-    if options[:ajax].nil?
-      self.ajax = options[:ajax]
-    else
-      self.ajax = true
-    end
     self.sendfile = options[:sendfile]
     send :include, ::SimpleAttachments::AttachmentsControllerMethods
   end
@@ -20,7 +14,7 @@ module SimpleAttachments::AttachmentsControllerMethods
 
   def create
     @attachment = self.class.attachment_model.new
-    if params[:container_id] != 'null' and self.class.ajax
+    if params[:container_id] != 'null'
       begin
         container = params[:container_type].classify.constantize.find params[:container_id]
         container.add_attachment @attachment
@@ -32,20 +26,15 @@ module SimpleAttachments::AttachmentsControllerMethods
   end
 
   def show
-    options = []
+    options = {}
     options[:type] = @attachment.mimetype
     options[:filename] = @attachment.filename
     options[self.class.sendfile] = true unless self.class.sendfile.nil?
     send_file @attachment.full_file_path, options
   end
 
-  def update
-    @attachment.destroy_file
-    save_attachment
-  end
-
   def destroy
-    @attachment.destroy if self.class.ajax
+    @attachment.destroy
     render :nothing => true
   end
 
