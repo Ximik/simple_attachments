@@ -48,14 +48,14 @@ var simple_attachments = {
   },
 
   //Creates input file field inside the div
-  addInput: function(object, container_model, container_id, new_path, field_fn) {
+  addInput: function(object, container_model, container_id, new_attachment_path, field_fn) {
     var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
     input.appendTo($(object).find(".simple_attachments_add_file_div"));
     var inputs = [ $(input),
                    $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", container_id),
                    $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model)
                  ];
-    var form = $("<form>").attr("method", "post").attr("action", new_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
+    var form = $("<form>").attr("method", "post").attr("action", new_attachment_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
     form.appendEach(inputs);
     input.data("object", object);
     input.data("form", form);
@@ -101,17 +101,16 @@ var simple_attachments = {
 
 $(function() {
   $("div.simple_attachments_multiple_file_field_div").each(function() {
-    $(this).data("new_path", $(this).attr("data-new-path"));
     this.newField_pt = function() {
-      var input_name = $(this).attr("data-container")+"["+$(this).attr("data-attachments")+"][]";
+      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-attachments")+"][]";
       var destroy = $(this).attr("destroy") == 'true' ? true : false;
       return simple_attachments.newField_pt(this, input_name, destroy);
     }
     this.addInput = function() {
-      var container_model = $(this).attr("data-container");
-      var container_id = $(this).attr("data-container-id");
-      var new_path = $(this).attr("data-new-path");
-      simple_attachments.addInput(this, container_model, container_id, new_path, function(object) {
+      var container_model = $(this).attr("data-container-model");
+      var container_id = $(this).attr("data-container-model-id");
+      var new_attachment_path = $(this).attr("data-new-attachment-path");
+      simple_attachments.addInput(this, container_model, container_id, new_attachment_path, function(object) {
         return object.newField_pt();
       });
     }

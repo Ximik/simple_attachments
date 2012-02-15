@@ -21,7 +21,7 @@ class ActionView::Helpers::FormBuilder
                           :id => 'simple_attachments_'.concat(@object_name).concat('_').concat(method.to_s),
                           :data => {:container_model => @object_name,
                                     :container_id => container_id,
-                                    :destroy_remote => destroy_remote
+                                    :destroy_remote => destroy_remote,
                                     :attachments => method,
                                     :new_attachment_path => @template.send(method.to_s.concat('_path')),
                                     :attached => @object.send(@object.class.attachments).map{|a| a.serializable_hash}.to_json,
