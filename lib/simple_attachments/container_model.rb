@@ -12,6 +12,7 @@ module SimpleAttachments::ContainerModel
         send(self.class.attachments) << attachment unless attachment.nil?
       end
       send(:define_method, self.attachments + '=') do |attachment_ids|
+        attachment_ids = attachment_ids.map { |id| id.to_i }
         old_attachment_ids = send(self.class.attachment_ids)
         self.class.attachment_model.destroy_all :id => (old_attachment_ids - attachment_ids)
         (attachment_ids - old_attachment_ids).each do |attachment_id|
@@ -35,6 +36,7 @@ module SimpleAttachments::ContainerModel
       end
       send(:define_method, self.attachment + '=') do |attachment_id|
         send(self.class.attachment).destroy
+        attachment = self.class.attachment_model.find_by_id attachment_id
         add_attachment attachment if attachment.container.nil?
       end
       options.delete :with

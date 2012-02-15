@@ -17,11 +17,10 @@ var simple_attachments = {
     //Create new field
     var field = $("<div>").attr("class", "simple_attachments_field_div");
     object.newField(field);
-    //Add service data
     field.data("input_name", input_name);
     field.data("destroy", destroy);
-    //Sets attachment data for field
-    field = field.get();
+    field = field.get(0);
+    //Prepares data for field
     field.setData_pt = function(data) {
       //Prepare service data
       var hidden_input = $("<input>").attr("type", "hidden").attr("name", input_name).attr("value", data.id);
@@ -147,7 +146,7 @@ $(function() {
       simple_attachments.addInput(this, container_model, container_id, new_attachment_path, function(object) {
         var field = object.find(".simple_attachments_field_div");
         if (field.length) {
-          field = field.get();
+          field = field.get(0);
         }else{
           field = this.newField_pt();
         }

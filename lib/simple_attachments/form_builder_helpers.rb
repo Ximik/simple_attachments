@@ -27,7 +27,7 @@ module ActionView::Helpers
                                       :new_attachment_path => @template.send(method.to_s.concat('_path')),
                                       :attached => @object.send(@object.class.attachments).map{|a| a.serializable_hash}.to_json,
                                       :other => options.to_json
-                            }
+                                     }
                            )
     end
   end
@@ -43,10 +43,11 @@ module ActionView::Helpers
                             :new_attachment_path => @template.send(attachment.concat('_path')),
                             :attached => container.send(container.class.attachment).serializable_hash.to_json,
                             :other => options.to_json
+                           }
                   )
     end
   end
- 
-  FormBuilder.extend SimpleAttachmentsFormHelper
+
+  FormBuilder.send(:include, SimpleAttachmentsFormHelper)
   include SimpleAttachmentsTagHelper
 end
