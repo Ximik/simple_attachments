@@ -1,10 +1,46 @@
 var simple_attachments = {
+  //Creates new field with service data in it
+  newField_pt: function(input_name, destroy) {
+    //Create new field
+    var field = this.newField();
+    //Add service data
+    $(field).data("input_name", input_name);
+    $(field).data("destroy", destroy);
+    //Sets attachment data for field
+    field.setData_pt = function(data) {
+      //Prepare service data
+      var hidden_input = $("<input>").attr("type", "hidden").attr("name", input_name).attr("value", data.id);
+      var destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
+      destroy_link.data("field", $(this));
+      if (destroy) {
+        destroy_link.click(function() {
+          //Delete record and field
+          $.post(this.href, { _method: "delete" });
+          $(this).data("field").remove();
+          return false;
+        });
+      }else{
+        destroy_link.click(function() {
+          //Delete only field
+          $(this).data("field").remove();
+           return false;
+        });
+      }
+      data.hidden_input = hidden_input;
+      data.destroy_link = destroy_link;
+      //Call engine with service data
+      this.setData(data);
+    }
+    return field;
+  }
 }
 
 $(function() {
   $("div.simple_attachments_multiple_file_field_div").each(function() {
-    $(this).data("input_name", $(this).attr("data-container")+"["+$(this).attr("data-attachments")+"][]");
     $(this).data("new_path", $(this).attr("data-new-path"));
+    var input_name = $(this).attr("data-container")+"["+$(this).attr("data-attachments")+"][]";
+    var destroy = $(this).attr("destroy") == 'true' ? true : false;
+    this.newField_pt = newField_pt(input_name, destroy);
     //Creates new field with service data in it
     this.newField_pt = function() {
       //Create new field
