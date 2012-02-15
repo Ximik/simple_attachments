@@ -15,11 +15,13 @@ var simple_attachments = {
   //Creates new field with service data in it
   newField_pt: function(object, input_name, destroy) {
     //Create new field
-    var field = object.newField();
+    var field = $("<div>").attr("class", "simple_attachments_field_div");
+    object.newField(field);
     //Add service data
-    $(field).data("input_name", input_name);
-    $(field).data("destroy", destroy);
+    field.data("input_name", input_name);
+    field.data("destroy", destroy);
     //Sets attachment data for field
+    field = field.get();
     field.setData_pt = function(data) {
       //Prepare service data
       var hidden_input = $("<input>").attr("type", "hidden").attr("name", input_name).attr("value", data.id);
@@ -54,7 +56,7 @@ var simple_attachments = {
     input.appendTo($(object).find(".simple_attachments_add_file_div"));
     //Create form
     var inputs = [ $(input),
-                   $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", (container_id ? container_id : '')),
+                   $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", container_id),
                    $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model)
                  ];
     var form = $("<form>").attr("method", "post").attr("action", new_attachment_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
@@ -104,6 +106,7 @@ var simple_attachments = {
 }
 
 $(function() {
+  //For SimpleAttachmentsFormHelper multiple_file_field
   $("div.simple_attachments_multiple_file_field_div").each(function() {
     this.newField_pt = function() {
       var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-attachments")+"][]";
@@ -112,7 +115,7 @@ $(function() {
     }
     this.addInput = function() {
       var container_model = $(this).attr("data-container-model");
-      var container_id = $(this).attr("data-container-model-id");
+      var container_id = $(this).attr("data-container-id");
       var new_attachment_path = $(this).attr("data-new-attachment-path");
       simple_attachments.addInput(this, container_model, container_id, new_attachment_path, function(object) {
         return object.newField_pt();
@@ -126,6 +129,39 @@ $(function() {
       var data = attached[i];
       var field = this.newField_pt();
       field.setData_pt(attached[i]);
+    }
+    //Init engine with optional data
+    var data = $.parseJSON($(this).attr("data-other"));
+    this.init(data);
+  });
+  //For SimpleAttachmentsTagHelper file_tag
+  $("div.simple_attachments_file_tag_div").each(function() {
+    $(this).newField_pt = function() {
+      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-attachment")+"][]";
+      return simple_attachments.newField_pt(this, input_name, true);
+    }
+    this.addInput = function() {
+      var container_model = $(this).attr("data-container-model");
+      var container_id = $(this).attr("data-container-id");
+      var new_attachment_path = $(this).attr("data-new-attachment-path");
+      simple_attachments.addInput(this, container_model, container_id, new_attachment_path, function(object) {
+        var field = object.find(".simple_attachments_field_div");
+        if (field.length) {
+          field = field.get();
+        }else{
+          field = this.newField_pt();
+        }
+        return field;
+      });
+    }
+    //Create first input field
+    this.addInput();
+    //Show already added attachment
+    var attached = $.parseJSON($(this).attr("data-attached"));
+    if (attached.length) {
+      var data = attached[0];
+      var field = this.newField_pt();
+      field.setData_pt(attached[0]);
     }
     //Init engine with optional data
     var data = $.parseJSON($(this).attr("data-other"));
