@@ -49,25 +49,29 @@ var simple_attachments = {
 
   //Creates input file field inside the div
   addInput: function(object, container_model, container_id, new_attachment_path, field_fn) {
+    //Create input file field
     var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
     input.appendTo($(object).find(".simple_attachments_add_file_div"));
+    //Create form
     var inputs = [ $(input),
                    $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", (container_id ? container_id : '')),
                    $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model)
                  ];
     var form = $("<form>").attr("method", "post").attr("action", new_attachment_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
-    form.appendEach(inputs);
     input.data("object", object);
     input.data("form", form);
+    input.data("inputs", inputs);
     input.data("field_fn", field_fn);
     //Catch file choice
     input.change(function() {
       $(this).off();
       var form = $(this).data("form");
+      var inputs = $(this).data("inputs");
       var object = $(this).data("object");
       var field = $(this).data("field_fn")(object);
+      form.appendEach(inputs);
       object.addInput();
-      simple_attachments.sendForm(form, inputs, field);
+      simple_attachments.sendForm(form, field);
     });
   },
 
