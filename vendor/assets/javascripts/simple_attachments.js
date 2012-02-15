@@ -52,7 +52,7 @@ var simple_attachments = {
     var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
     input.appendTo($(object).find(".simple_attachments_add_file_div"));
     var inputs = [ $(input),
-                   $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", container_id),
+                   $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", (container_id ? container_id : '')),
                    $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model)
                  ];
     var form = $("<form>").attr("method", "post").attr("action", new_attachment_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
