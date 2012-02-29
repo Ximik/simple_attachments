@@ -49,13 +49,13 @@ var simple_attachments = {
   },
 
   //Creates input file field inside the div
-  addInput: function(object, container_model, container_id, method, attachments_path, field_fn) {
+  addInput_pt: function(object, container_model, container_id, method, attachments_path, field_fn) {
     //Create input file field
     var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
     input.appendTo($(object).find(".simple_attachments_add_file_div"));
     //Create form
     var inputs = [ $(input),
-                   $("<input>").attr("type", "hidden").attr("name", $("meta[name=csrf-param]").attr("content")).attr("value",  $("meta[name=csrf-token]").attr("content"))
+                   $("<input>").attr("type", "hidden").attr("name", $("meta[name=csrf-param]").attr("content")).attr("value",  $("meta[name=csrf-token]").attr("content")),
                    $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", container_id),
                    $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model),
                    $("<input>").attr("type", "hidden").attr("name", "method").attr("value", method)
@@ -108,17 +108,18 @@ var simple_attachments = {
 
 $(function() {
   //For SimpleAttachmentsFormHelper multiple_file_field
-  $("div.simple_attachments_multiple_file_field_div").each(function() {
+  $(".simple_attachments_multiple_div").each(function() {
     this.newField_pt = function() {
-      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"][]";
+      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_][]";
       var destroy = $(this).attr("destroy") == 'true' ? true : false;
       return simple_attachments.newField_pt(this, input_name, destroy);
     }
     this.addInput = function() {
       var container_model = $(this).attr("data-container-model");
       var container_id = $(this).attr("data-container-id");
+      var method = $(this).attr("data-method");
       var attachments_path = $(this).attr("data-attachments-path");
-      simple_attachments.addInput(this, container_model, container_id, attachments_path, function(object) {
+      simple_attachments.addInput_pt(this, container_model, container_id, method, attachments_path, function(object) {
         return object.newField_pt();
       });
     }
@@ -136,36 +137,36 @@ $(function() {
     }
   });
   //For SimpleAttachmentsTagHelper file_tag
-  $("div.simple_attachments_file_tag_div").each(function() {
-    $(this).newField_pt = function() {
-      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"][]";
-      return simple_attachments.newField_pt(this, input_name, true);
-    }
-    this.addInput = function() {
-      var container_model = $(this).attr("data-container-model");
-      var container_id = $(this).attr("data-container-id");
-      var attachments_path = $(this).attr("data-attachments-path");
-      simple_attachments.addInput(this, container_model, container_id, attachments_path, function(object) {
-        var field = object.find(".simple_attachments_field_div");
-        if (field.length) {
-          field = field.get(0);
-        }else{
-          field = this.newField_pt();
-        }
-        return field;
-      });
-    }
-    //Init engine with optional data
-    var data = $.parseJSON($(this).attr("data-other"));
-    this.init(data);
-    //Create first input field
-    this.addInput();
-    //Show already added attachment
-    var attached = $.parseJSON($(this).attr("data-attached"));
-    if (attached.length) {
-      var data = attached[0];
-      var field = this.newField_pt();
-      field.setData_pt(attached[0]);
-    }
-  });
+//   $(".simple_attachments_singelton_div").each(function() {
+//     $(this).newField_pt = function() {
+//       var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"][]";
+//       return simple_attachments.newField_pt(this, input_name, true);
+//     }
+//     this.addInput = function() {
+//       var container_model = $(this).attr("data-container-model");
+//       var container_id = $(this).attr("data-container-id");
+//       var attachments_path = $(this).attr("data-attachments-path");
+//       simple_attachments.addInput(this, container_model, container_id, attachments_path, function(object) {
+//         var field = object.find(".simple_attachments_field_div");
+//         if (field.length) {
+//           field = field.get(0);
+//         }else{
+//           field = this.newField_pt();
+//         }
+//         return field;
+//       });
+//     }
+//     //Init engine with optional data
+//     var data = $.parseJSON($(this).attr("data-other"));
+//     this.init(data);
+//     //Create first input field
+//     this.addInput();
+//     //Show already added attachment
+//     var attached = $.parseJSON($(this).attr("data-attached"));
+//     if (attached.length) {
+//       var data = attached[0];
+//       var field = this.newField_pt();
+//       field.setData_pt(attached[0]);
+//     }
+//   });
 });

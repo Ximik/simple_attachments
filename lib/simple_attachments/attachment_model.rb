@@ -5,7 +5,6 @@ module SimpleAttachments::AttachmentModel
       reflection = belongs_to name, options
       self.class.send(:attr_accessor, :container_name)
       self.container_name = reflection.name
-      self.container_name.freeze
       before_save :save_file
       after_destroy :destroy_file
       send :extend, ClassMethods

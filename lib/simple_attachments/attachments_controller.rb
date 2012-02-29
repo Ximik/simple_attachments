@@ -6,7 +6,6 @@ module SimpleAttachments::AttachmentsController
       before_filter :load_attachment, :except => :create
       self.class.send(:attr_accessor, :attachment_model)
       self.attachment_model = (options[:attachment_model] or controller_path.classify.constantize)
-      self.attachment_model.freeze
       send :include, InstanceMethods
     end
   end
@@ -19,7 +18,7 @@ module SimpleAttachments::AttachmentsController
       if @attachment.save and params[:container_id] != 'null'
         begin
           container = params[:container_model].classify.constantize.find params[:container_id]
-          container.add_attachment params[:method], @attachment.id
+          container.add_attachment params[:method], self.class.attachment_model, @attachment.id
           container.save
         rescue
           @attachment.uploading_error
