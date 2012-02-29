@@ -1,49 +1,49 @@
 module SimpleAttachments::ContainerModel
 
-  def has_many(name, options = {}, &extension)
-    if options[:with] == :simple_attachments
-      self.class.send(:attr_accessor, :attachments)
-      self.class.send(:attr_accessor, :attachment_ids)
-      self.class.send(:attr_accessor, :attachment_model)
-      self.attachments = name.to_s
-      self.attachment_ids = self.attachments.singularize + '_ids'
-      self.attachment_model = self.attachments.classify.constantize
-      send(:define_method, :add_attachment) do |attachment|
-        send(self.class.attachments) << attachment unless attachment.nil?
-      end
-      send(:define_method, self.attachments + '=') do |attachment_ids|
+  module Helpers
+
+    def has_many_attachments(name, options = {})
+      reflection = has_many name, options
+      send(:define_method, reflection.plural_name + '=') do |attachment_ids|
+        method = __method__.to_s.chomp('=')
+        model = method.classify.constantize
+        old_attachment_ids = method.singularize.concat('_ids')
         attachment_ids = attachment_ids.map { |id| id.to_i }
-        old_attachment_ids = send(self.class.attachment_ids)
-        self.class.attachment_model.destroy_all :id => (old_attachment_ids - attachment_ids)
+        model.destroy_all :id => (old_attachment_ids - attachment_ids)
         (attachment_ids - old_attachment_ids).each do |attachment_id|
-          attachment = self.class.attachment_model.find_by_id attachment_id
-          add_attachment attachment if attachment.container.nil?
+          add_attachment(method, attachment_id)
         end
       end
-      options.delete :with
+      send :include, InstanceMethods
     end
-    super
+
+    def has_one_attachment(name, options = {})
+      reflection = has_one name, options
+      send(:define_method, reflection.name.to_s + '=') do |attachment_id|
+        method = __method__.to_s.chomp('=')
+        model = method.classify.constantize
+        add_attachment(method, attachment_id)
+      end
+      send :include, InstanceMethods
+    end
+
   end
 
-  def has_one(name, options = {})
-    if options[:with] == :simple_attachments
-      self.class.send(:attr_accessor, :attachment)
-      self.class.send(:attr_accessor, :attachment_model)
-      self.attachment = name.to_s
-      self.attachment_model = self.attachment.classify.constantize
-      send(:define_method, :add_attachment) do |attachment|
-        send(self.class.attachment + '=', attachment) unless attachment.nil?
+  module InstanceMethods
+    def add_attachment(method, attachment_id)
+      attachment = model.find_by_id attachment_id
+      return if attachment.nil?
+      return if attachment.attached?
+      smth = send(method)
+      if reflections[method].collection
+        smth << attachment
+      else
+        smth.destroy unless smth.nil?
+        smth = attachment
       end
-      send(:define_method, self.attachment + '=') do |attachment_id|
-        send(self.class.attachment).destroy
-        attachment = self.class.attachment_model.find_by_id attachment_id
-        add_attachment attachment if attachment.container.nil?
-      end
-      options.delete :with
     end
-    super
   end
 
 end
 
-ActiveRecord::Base.extend SimpleAttachments::ContainerModel
+ActiveRecord::Base.extend SimpleAttachments::ContainerModel::Helpers

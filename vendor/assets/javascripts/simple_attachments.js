@@ -49,16 +49,18 @@ var simple_attachments = {
   },
 
   //Creates input file field inside the div
-  addInput: function(object, container_model, container_id, new_attachment_path, field_fn) {
+  addInput: function(object, container_model, container_id, method, attachments_path, field_fn) {
     //Create input file field
     var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
     input.appendTo($(object).find(".simple_attachments_add_file_div"));
     //Create form
     var inputs = [ $(input),
+                   $("<input>").attr("type", "hidden").attr("name", $("meta[name=csrf-param]").attr("content")).attr("value",  $("meta[name=csrf-token]").attr("content"))
                    $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", container_id),
-                   $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model)
+                   $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model),
+                   $("<input>").attr("type", "hidden").attr("name", "method").attr("value", method)
                  ];
-    var form = $("<form>").attr("method", "post").attr("action", new_attachment_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
+    var form = $("<form>").attr("method", "post").attr("action", attachments_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
     input.data("object", object);
     input.data("form", form);
     input.data("inputs", inputs);
@@ -108,18 +110,21 @@ $(function() {
   //For SimpleAttachmentsFormHelper multiple_file_field
   $("div.simple_attachments_multiple_file_field_div").each(function() {
     this.newField_pt = function() {
-      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-attachments")+"][]";
+      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"][]";
       var destroy = $(this).attr("destroy") == 'true' ? true : false;
       return simple_attachments.newField_pt(this, input_name, destroy);
     }
     this.addInput = function() {
       var container_model = $(this).attr("data-container-model");
       var container_id = $(this).attr("data-container-id");
-      var new_attachment_path = $(this).attr("data-new-attachment-path");
-      simple_attachments.addInput(this, container_model, container_id, new_attachment_path, function(object) {
+      var attachments_path = $(this).attr("data-attachments-path");
+      simple_attachments.addInput(this, container_model, container_id, attachments_path, function(object) {
         return object.newField_pt();
       });
     }
+    //Init engine with optional data
+    var data = $.parseJSON($(this).attr("data-other"));
+    this.init(data);
     //Create first input field
     this.addInput();
     //Show already added attachments
@@ -129,21 +134,18 @@ $(function() {
       var field = this.newField_pt();
       field.setData_pt(attached[i]);
     }
-    //Init engine with optional data
-    var data = $.parseJSON($(this).attr("data-other"));
-    this.init(data);
   });
   //For SimpleAttachmentsTagHelper file_tag
   $("div.simple_attachments_file_tag_div").each(function() {
     $(this).newField_pt = function() {
-      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-attachment")+"][]";
+      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"][]";
       return simple_attachments.newField_pt(this, input_name, true);
     }
     this.addInput = function() {
       var container_model = $(this).attr("data-container-model");
       var container_id = $(this).attr("data-container-id");
-      var new_attachment_path = $(this).attr("data-new-attachment-path");
-      simple_attachments.addInput(this, container_model, container_id, new_attachment_path, function(object) {
+      var attachments_path = $(this).attr("data-attachments-path");
+      simple_attachments.addInput(this, container_model, container_id, attachments_path, function(object) {
         var field = object.find(".simple_attachments_field_div");
         if (field.length) {
           field = field.get(0);
@@ -153,6 +155,9 @@ $(function() {
         return field;
       });
     }
+    //Init engine with optional data
+    var data = $.parseJSON($(this).attr("data-other"));
+    this.init(data);
     //Create first input field
     this.addInput();
     //Show already added attachment
@@ -162,8 +167,5 @@ $(function() {
       var field = this.newField_pt();
       field.setData_pt(attached[0]);
     }
-    //Init engine with optional data
-    var data = $.parseJSON($(this).attr("data-other"));
-    this.init(data);
   });
 });
