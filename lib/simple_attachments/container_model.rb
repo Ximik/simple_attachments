@@ -2,6 +2,12 @@ module SimpleAttachments::ContainerModel
 
   module Helpers
 
+    # Mark model as container and creates association.
+    #
+    # Syntax is identical to +has_many+.
+    #
+    #   has_many_attachments :attachments
+
     def has_many_attachments(name, options = {})
       reflection = has_many name, options
       send(:define_method, reflection.plural_name + '_=') do |attachment_ids|
@@ -16,6 +22,12 @@ module SimpleAttachments::ContainerModel
       send :include, InstanceMethods
     end
 
+    # Mark model as container and creates association.
+    #
+    # Syntax is identical to +has_one+.
+    #
+    #   has_one_attachment :attachment
+
     def has_one_attachment(name, options = {})
       reflection = has_one name, options
       send(:define_method, reflection.name.to_s + '_=') do |attachment_id|
@@ -29,7 +41,7 @@ module SimpleAttachments::ContainerModel
 
   module InstanceMethods
 
-    def add_attachment(method, model, attachment_id)
+    def add_attachment(method, model, attachment_id) # :nodoc:
       attachment = model.find_by_id attachment_id
       return if attachment.nil?
       return if attachment.attached?
@@ -44,7 +56,7 @@ module SimpleAttachments::ContainerModel
 
     private
 
-    def recover_vars(method)
+    def recover_vars(method) # :nodoc:
       method = method.to_s.chomp('_=')
       model = reflections[method.to_sym].klass
       [method, model]

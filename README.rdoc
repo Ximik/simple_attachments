@@ -1,0 +1,98 @@
+= Simple Attachments
+
+Simple Attachments is a plugin for Ruby on Rails 3 which implements complex solution for working with file attachments.
+
+== Requirements
+
+Plugin contains some CSS and JavaScript code, so Asset Pipeline should be switched on (by default).
+Also you need {jQuery library}[http://jquery.com/] to make JavaScript work.
+
+== Installation
+
+Add this to your Gemfile and run the +bundle+ command.
+
+  gem 'simple_attachments', :git => 'git://github.com/Ximik/simple_attachments.git'
+
+== Getting Started
+
+Let's say you have a +User+ which has one +Avatar+ and many +Document+s.
+The avatar can be change from user edit form. Avatar data updates only after submiting the form.
+The documents can be managed separately with auto saving all changes in background.
+You can find this app in spec/app.
+
+=== Migrations
+
+  class CreateAvatar < ActiveRecord::Migration
+    def change
+      create_table :avatars do |t|
+        t.integer :avatar_id, :null => true 
+        t.attachment
+      end
+    end
+  end
+
+  class CreateDocument < ActiveRecord::Migration
+    def change
+      create_table :documents do |t|
+        t.integer :avatar_id, :null => true 
+        t.attachment
+      end
+    end
+  end
+
+*WARNING*: it's important to permit null value for container.
+
+=== Routes
+
+  resources :avatars, :only => [:create, :show, :destroy]
+  resources :documents, :only => [:create, :show, :destroy]
+
+=== Models
+
+  class User < ActiveRecord::Base
+    has_one_attachment :avatar, :dependent => :destroy
+    has_many_attachments :books, :dependent => :destroy
+  end
+
+  class Avatar < ActiveRecord::Base
+    attached_to :user
+    validates_mimetype %w(image/png image/gif image/jpeg)
+    validates_filesize :less_than_or_equal_to => 5e4
+  end
+
+  class Document < ActiveRecord::Base
+    attached_to :user
+    validates_mimetype %w(application/pdf)
+    validates_filesize :less_than_or_equal_to => 20e6
+  end
+
+You can use many options here. Just like with +has_one+, +has_many+ and +belongs_to+.
+
+=== Controllers
+
+  class AvatarController < ApplicationController
+    attachment_controller
+  end
+
+  class DocumentsController < ApplicationController
+    attachment_controller
+  end
+
+=== View
+
+  <%= form_for @user do |f| %>
+    <%= f.singleton_file :avatar, :auto_associate => false %>
+  <% end %>
+
+  <%= multiple_files_tag @user, :documents %>
+
+*WARNING*: you also need +csrf_meta_tags+ in your layout to work with +protect_from_forgery+ filter.
+
+=== Assets
+
+You should somehow require simple_attachments.css and simple_attachments.js in your page.
+
+*WARNING*: simple_attachments.js should be required after you specify newField function.
+
+
+Copyright (c) 2012 Tsokurov Alex <me@ximik.net>, released under the MIT license

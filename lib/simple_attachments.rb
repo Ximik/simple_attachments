@@ -1,5 +1,5 @@
-module SimpleAttachments
-  class Engine < ::Rails::Engine
+module SimpleAttachments # :nodoc:
+  class Engine < ::Rails::Engine # :nodoc:
   end
 end
 I18n.load_path << File.join(File.dirname(__FILE__), '..', 'locales', 'en.yml')
