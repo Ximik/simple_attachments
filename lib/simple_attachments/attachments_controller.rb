@@ -9,7 +9,7 @@ module SimpleAttachments::AttachmentsController
       send :include, InstanceMethods
     end
   end
-  
+
   module InstanceMethods
 
     def create
@@ -18,10 +18,9 @@ module SimpleAttachments::AttachmentsController
       if @attachment.save and params[:container_id] != 'null'
         begin
           container = params[:container_model].classify.constantize.find params[:container_id]
-          container.add_attachment params[:method], self.class.attachment_model, @attachment.id
+          associate(container, params[:method])
           container.save
         rescue
-        debugger
           @attachment.uploading_error
         end
       end
@@ -51,6 +50,10 @@ module SimpleAttachments::AttachmentsController
       @attachment = self.class.attachment_model.find params[:id]
     rescue
       raise ActionController::RoutingError.new('Not Found')
+    end
+
+    def associate(container, method)
+      container.add_attachment method, self.class.attachment_model, self.id
     end
 
     def render_answer(succeed, data)

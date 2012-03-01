@@ -43,7 +43,7 @@ module SimpleAttachments::ContainerModel
     end
 
     private
-    
+
     def recover_vars(method)
       method = method.to_s.chomp('_=')
       model = reflections[method.to_sym].klass
