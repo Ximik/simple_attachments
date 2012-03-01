@@ -1,23 +1,26 @@
 var simple_attachments = {
 
   setFieldsData: function(event, data) {
-    var field = event.currentTarget;
-    var options = event.data.options;
-    var hidden_input = $("<input>").attr("type", "hidden").attr("name", input_name).attr("value", data.id);
-    var destroy_link = null;
+    var field = $(event.currentTarget);
+    var div = event.data.div;
+    var options = div.options;
+    data.hidden_input = $("<input>").attr("type", "hidden").attr("name", div.input_name).attr("value", data.id);
+    data.destroy_link = null;
     if (options.can_destroy) {
-      destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
-      destroy_link.bind("click", {field: field, destroy_remote: options.destroy_remote}, function(event) {
+      data.destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
+      data.destroy_link.bind("click", {field: field, destroy_remote: options.destroy_remote}, function(event) {
         if (event.data.destroy_remote) $.post(this.href, { _method: "delete" });
         event.data.field.remove();
         return false;
       });
     }
+    data.options = options;
+    data.div = div;
     field.trigger("loaded", [data]);
   },
 
   createInput: function(event) {
-    var div = event.currentTarget;
+    var div = $(event.currentTarget);
     var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
     input.appendTo(div.find(".simple_attachments_add_file_div"));
     var form = $("<form>").attr("method", "post").attr("action", div.attr("data-attachments-path")).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
@@ -25,11 +28,11 @@ var simple_attachments = {
     $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", div.attr("data-container-id")).appendTo(form);
     $("<input>").attr("type", "hidden").attr("name", "container_model").attr("value", div.attr("data-container-model")).appendTo(form);
     $("<input>").attr("type", "hidden").attr("name", "method").attr("value", div.attr("data-method")).appendTo(form);
-    input.bind("change", {div: div.get(0), form: form}, simple_attachments.createIframe);
+    input.bind("change", {div: div, form: form}, simple_attachments.createIframe);
   },
 
   createIframe: function(event) {
-    var input = event.currentTarget;
+    var input = $(event.currentTarget);
     var div = event.data.div;
     var form = event.data.form;
     var iframe = $("<iframe>").attr("class", "simple_attachments_iframe");
@@ -41,17 +44,17 @@ var simple_attachments = {
   },
   
   sendForm: function(event) {
-    var iframe = event.currentTarget;
+    var iframe = $(event.currentTarget);
     var div = event.data.div;
     var form = event.data.form;
     iframe.off();
     form.appendTo(iframe.contents().find("body"));
     form.submit();
-    iframe.bind("load", {field: div.giveField()}, simple_attachments.receiveForm);
+    iframe.bind("load", {field: div.get(0).giveField()}, simple_attachments.receiveForm);
   },
   
   receiveForm: function(event) {
-    var iframe = event.currentTarget;
+    var iframe = $(event.currentTarget);
     var field = event.data.field;
     var answer = $.parseJSON(iframe.contents().find("body").text());
     var data = answer.data;
@@ -69,7 +72,7 @@ $(function() {
   $(".simple_attachments_multiple_div").each(function() {
     this.input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_][]";
     this.giveField = function() {
-      this.createField();
+      return this.createField();
     }
     this.loadAttached = function(attached) {
      for (i in attached) {
@@ -84,11 +87,8 @@ $(function() {
     this.input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_]";
     this.giveField = function() {
       var field = $(this).find(".simple_attachments_field_div");
-      if (field.length)
-        field = field;
-      else
-        field = this.createField();
-      return field;
+      if (field.length) field = field.remove();
+      return this.createField();
     }
     this.loadAttached = function(attached) {
       if (attached) {
@@ -104,12 +104,16 @@ $(function() {
     this.createField = function() {
       var field = $("<div>").attr("class", "simple_attachments_field_div");
       this.newField(field);
-      field.bind("uploaded", {options: this.options}, simple_attachments.setFieldsData);
+      field.bind("uploaded", {div: this}, simple_attachments.setFieldsData);
+      return field;
     }
-    this.bind("create_input", simple_attachments.createInput);
+    $(this).bind("create_input", simple_attachments.createInput);
     this.init();
     this.loadAttached(attached);
-    this.trigger("create_input");
+    if (this.options.can_create)
+      $(this).trigger("create_input");
+    else
+      $(this).find(".simple_attachments_add_file_div").hide();
   });
 
 });

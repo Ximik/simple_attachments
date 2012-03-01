@@ -21,7 +21,11 @@ module ActionView
       end
       options.delete :auto_associate
       attached = object.send(method)
-      attached = attached.map{|a| a.serializable_hash} if type == :multiple
+      if attached.is_a? Array
+        attached = attached.map{|a| a.serializable_hash}
+      else
+        attached = attached.serializable_hash unless attached.nil?
+      end
       attachments_path = template.send object.class.reflections[method].class_name.pluralize.underscore.concat('_path') #FIXME
       template.content_tag(:div,
                            template.content_tag(:div, text, :class => 'simple_attachments_add_file_div'),
