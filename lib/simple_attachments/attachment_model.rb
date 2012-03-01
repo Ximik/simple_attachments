@@ -2,7 +2,7 @@ module SimpleAttachments::AttachmentModel
 
   module Helpers
 
-    # Mark model as attachment and creates association.
+    # Mark model as attachment and create association.
     #
     # Syntax is identical to +belongs_to+.
     #
@@ -32,7 +32,7 @@ module SimpleAttachments::AttachmentModel
     #   validates_mimetype %w(image/png image/gif image/jpeg), :message => 'should be an image'
     #
     # +:message+ is optional.
-    
+
     def validates_mimetype(types, options = {})
       options[:message] ||= I18n.t('simple_attachments.mimetype_isnt_allowed')
       validates :mimetype, :inclusion => { :in => types, :message => options[:message] }
@@ -83,7 +83,7 @@ module SimpleAttachments::AttachmentModel
     end
 
     # Save file in the filesystem.
-    
+
     def save_file
       File.open(full_file_path, 'w') { |file| file.write @file.read } unless @file.nil?
     rescue
@@ -95,7 +95,7 @@ module SimpleAttachments::AttachmentModel
     def destroy_file
       File.delete full_file_path
     rescue
-    end.
+    end
 
     def serializable_hash # :nodoc:
       data = super

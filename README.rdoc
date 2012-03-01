@@ -22,7 +22,7 @@ You can find this app in spec/app.
 
 === Migrations
 
-  class CreateAvatar < ActiveRecord::Migration
+  class CreateAvatars < ActiveRecord::Migration
     def change
       create_table :avatars do |t|
         t.integer :avatar_id, :null => true 
@@ -31,7 +31,7 @@ You can find this app in spec/app.
     end
   end
 
-  class CreateDocument < ActiveRecord::Migration
+  class CreateDocuments < ActiveRecord::Migration
     def change
       create_table :documents do |t|
         t.integer :avatar_id, :null => true 
@@ -66,11 +66,11 @@ You can find this app in spec/app.
     validates_filesize :less_than_or_equal_to => 20e6
   end
 
-You can use many options here. Just like with +has_one+, +has_many+ and +belongs_to+.
+You can use a lot of options here. Just like with +has_one+, +has_many+ and +belongs_to+.
 
 === Controllers
 
-  class AvatarController < ApplicationController
+  class AvatarsController < ApplicationController
     attachment_controller
   end
 

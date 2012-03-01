@@ -1,10 +1,10 @@
-module ActionView # :nodoc:
-  module Helpers::SimpleAttachments
+module SimpleAttachments
+  module ViewHelpers
 
     # Create +div+ with attachments.
     #
     # Allowed +options+
-    # 
+    #
     # [:can_destroy]     Show destroy link.
     # [:can_create]      Show add button.
     # [:readonly]        Just sets both :can_destroy and :can_create. True by default.
@@ -28,14 +28,14 @@ module ActionView # :nodoc:
       end
       attachments_path = template.send object.class.reflections[method].class_name.pluralize.underscore.concat('_path') #FIXME
       template.content_tag(:div,
-                           template.content_tag(:div, text, :class => 'simple_attachments_add_file_div'),
-                           :class => "simple_attachments_div simple_attachments_#{type}_div",
-                           :data => {:container_model => object_name,
-                                     :container_id => container_id,
-                                     :method => method,
-                                     :attachments_path => attachments_path, 
-                                     :attached => attached.to_json,
-                                     :options => options.to_json
+                            template.content_tag(:div, text, :class => 'simple_attachments_add_file_div'),
+                            :class => "simple_attachments_div simple_attachments_#{type}_div",
+                            :data => {:container_model => object_name,
+                                      :container_id => container_id,
+                                      :method => method,
+                                      :attachments_path => attachments_path, 
+                                      :attached => attached.to_json,
+                                      :options => options.to_json
                                     }
                           )
     end
@@ -53,7 +53,7 @@ module ActionView # :nodoc:
       private
 
       def helper(type, method, text, options) # :nodoc:
-        Helpers::SimpleAttachments.helper(type, template, object, object_name, method, text, options)
+        ViewHelpers.helper(type, template, object, object_name, method, text, options)
       end
 
     end
@@ -71,17 +71,19 @@ module ActionView # :nodoc:
       private
 
       def helper(type, object, method, text, options) # :nodoc:
-        Helpers::SimpleAttachments.helper(type, self, object, object.class.to_s.underscore, method, text, options)
+        ViewHelpers.helper(type, self, object, object.class.to_s.underscore, method, text, options)
       end
 
     end
 
   end
+end
 
+module ActionView # :nodoc:
   class Helpers::FormBuilder # :nodoc:
-    include Helpers::SimpleAttachments::FormHelper
+    include SimpleAttachments::ViewHelpers::FormHelper
   end
   class Base # :nodoc:
-    include Helpers::SimpleAttachments::TagHelper
+    include SimpleAttachments::ViewHelpers::TagHelper
   end
 end

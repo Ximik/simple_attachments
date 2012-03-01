@@ -3,7 +3,7 @@ module SimpleAttachments::AttachmentsController
   module Helpers
 
     # Mark controller as controller for attachment resource.
-    # 
+    #
     # Just put at any place of your controller.
     #
     #   attachment_controller
@@ -57,7 +57,7 @@ module SimpleAttachments::AttachmentsController
     private
 
     # Before filter to load attachment resource.
-    # 
+    #
     # If you use another way to load it then just skip this filter.
     #
     #   skip_before_filter :load_attachment
@@ -70,7 +70,7 @@ module SimpleAttachments::AttachmentsController
 
     # Associate attachment with container.
     # Works only if you use +:auto_associate+ option (switched on by default).
-    # 
+    #
     # Redefine it if you want to have some extra control. E.g. CanCan authorization.
     #
     #   def associate(container, method)
@@ -81,7 +81,7 @@ module SimpleAttachments::AttachmentsController
     def associate(container, method)
       container.add_attachment method, self.class.attachment_model, self.id
     end
-    
+
     # Renders answer for javascript
 
     def render_answer(succeed, data)

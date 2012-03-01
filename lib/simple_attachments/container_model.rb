@@ -2,7 +2,7 @@ module SimpleAttachments::ContainerModel
 
   module Helpers
 
-    # Mark model as container and creates association.
+    # Mark model as container and create association.
     #
     # Syntax is identical to +has_many+.
     #
@@ -22,7 +22,7 @@ module SimpleAttachments::ContainerModel
       send :include, InstanceMethods
     end
 
-    # Mark model as container and creates association.
+    # Mark model as container and create association.
     #
     # Syntax is identical to +has_one+.
     #
