@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.3.6'
   s.add_development_dependency 'rspec'
 
-  s.files = Dir.glob('lib/**/*') + %w(MIT-LICENSE README.rdoc)
-  s.test_files = Dir.glob('spec/**/*')
+  s.files = Dir.glob(%w(lib/**/* locales/* vendor/**/*)) + %w(MIT-LICENSE README.rdoc)
+  s.test_files = Dir.glob('spec/**/*') + %w(Rakefile)
   s.require_paths = %w(lib)
 end

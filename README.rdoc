@@ -15,7 +15,7 @@ Add this to your Gemfile and run the +bundle+ command.
 
 == Getting Started
 
-Let's say you have a +User+ which has one +Avatar+ and many +Document+s.
+Let's say you have a +User+ which has one +Avatar+ and many +Document+.
 The avatar can be change from user edit form. Avatar data updates only after submiting the form.
 The documents can be managed separately with auto saving all changes in background.
 You can find this app in spec/app.
@@ -94,5 +94,6 @@ You should somehow require simple_attachments.css and simple_attachments.js in y
 
 *WARNING*: simple_attachments.js should be required after you specify newField function.
 
+---
 
-Copyright (c) 2012 Tsokurov Alex <me@ximik.net>, released under the MIT license
+(c) 2012 Tsokurov Alex <{me@ximik.net}[mailto:me@ximik.net]>, released under the MIT license
