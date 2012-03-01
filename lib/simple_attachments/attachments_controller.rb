@@ -21,6 +21,7 @@ module SimpleAttachments::AttachmentsController
           container.add_attachment params[:method], self.class.attachment_model, @attachment.id
           container.save
         rescue
+        debugger
           @attachment.uploading_error
         end
       end

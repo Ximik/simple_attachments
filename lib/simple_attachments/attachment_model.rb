@@ -61,7 +61,7 @@ module SimpleAttachments::AttachmentModel
 
     def serializable_hash
       data = super
-      data['filepath'] = Rails.application.routes.url_helpers.send(self.class.to_s.underscore.concat('_path'), id)
+      data['filepath'] = path
       data
     end
     
@@ -71,6 +71,10 @@ module SimpleAttachments::AttachmentModel
 
     def uploading_error
       errors[:base] << I18n.t('simple_attachments.uploading_error')
+    end
+
+    def path
+      Rails.application.routes.url_helpers.send(self.class.to_s.underscore.concat('_path'), id)
     end
 
   end

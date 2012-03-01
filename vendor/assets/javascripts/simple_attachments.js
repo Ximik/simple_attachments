@@ -1,172 +1,115 @@
-//jQuery hack
-//http://www.bennadel.com/blog/2268-Appending-An-Array-Of-jQuery-Objects-To-The-DOM.htm
-jQuery.fn.appendEach = function( arrayOfWrappers ){
-  var rawArray = jQuery.map(
-    arrayOfWrappers,
-    function(value, index){
-      return(value.get());
-    }
-  );
-  this.append(rawArray);
-  return(this);
-};
-
 var simple_attachments = {
-  //Creates new field with service data in it
-  newField_pt: function(object, input_name, destroy) {
-    //Create new field
-    var field = $("<div>").attr("class", "simple_attachments_field_div");
-    object.newField(field);
-    field.data("input_name", input_name);
-    field.data("destroy", destroy);
-    field = field.get(0);
-    //Prepares data for field
-    field.setData_pt = function(data) {
-      //Prepare service data
-      var hidden_input = $("<input>").attr("type", "hidden").attr("name", input_name).attr("value", data.id);
-      var destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
-      destroy_link.data("field", $(this));
-      if (destroy) {
-        destroy_link.click(function() {
-          //Delete record and field
-          $.post(this.href, { _method: "delete" });
-          $(this).data("field").remove();
-          return false;
-        });
-      }else{
-        destroy_link.click(function() {
-          //Delete only field
-          $(this).data("field").remove();
-           return false;
-        });
-      }
-      data.hidden_input = hidden_input;
-      data.destroy_link = destroy_link;
-      //Call engine with service data
-      this.setData(data);
-    }
-    return field;
-  },
 
-  //Creates input file field inside the div
-  addInput_pt: function(object, container_model, container_id, method, attachments_path, field_fn) {
-    //Create input file field
-    var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
-    input.appendTo($(object).find(".simple_attachments_add_file_div"));
-    //Create form
-    var inputs = [ $(input),
-                   $("<input>").attr("type", "hidden").attr("name", $("meta[name=csrf-param]").attr("content")).attr("value",  $("meta[name=csrf-token]").attr("content")),
-                   $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", container_id),
-                   $("<input>").attr("type", "hidden").attr("name", "container_type").attr("value", container_model),
-                   $("<input>").attr("type", "hidden").attr("name", "method").attr("value", method)
-                 ];
-    var form = $("<form>").attr("method", "post").attr("action", attachments_path).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
-    input.data("object", object);
-    input.data("form", form);
-    input.data("inputs", inputs);
-    input.data("field_fn", field_fn);
-    //Catch file choice
-    input.change(function() {
-      $(this).off();
-      var form = $(this).data("form");
-      var inputs = $(this).data("inputs");
-      var object = $(this).data("object");
-      var field = $(this).data("field_fn")(object);
-      form.appendEach(inputs);
-      object.addInput();
-      simple_attachments.sendForm(form, field);
-    });
-  },
-
-  //Creates iframe, submit form in it and apply answer to field
-  sendForm: function(form, field) {
-    var iframe = $("<iframe>").attr("class", "simple_attachments_iframe");
-    iframe.appendTo($("body"));
-    iframe.data("form", form);
-    iframe.data("field", field);
-    //Catches iframe creation
-    iframe.load(function() {
-      $(this).off();
-      var form = iframe.data("form");
-      form.appendTo($(this).contents().find("body"));
-      //Catches iframe form send
-      $(this).load(function() {
-        var field = $(this).data("field");
-        var answer = $.parseJSON($(this).contents().find("body").text());
-        if (answer.succeed) {
-          field.setData_pt(answer.data);
-        }else{
-          field.rescueErrors(answer.data);
-        }
-        $(this).remove();
+  setFieldsData: function(event, data) {
+    var field = event.currentTarget;
+    var options = event.data.options;
+    var hidden_input = $("<input>").attr("type", "hidden").attr("name", input_name).attr("value", data.id);
+    var destroy_link = null;
+    if (options.can_destroy) {
+      destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
+      destroy_link.bind("click", {field: field, destroy_remote: options.destroy_remote}, function(event) {
+        if (event.data.destroy_remote) $.post(this.href, { _method: "delete" });
+        event.data.field.remove();
+        return false;
       });
-      //Submit form
-      form.submit();
-    });
+    }
+    field.trigger("loaded", [data]);
+  },
+
+  createInput: function(event) {
+    var div = event.currentTarget;
+    var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
+    input.appendTo(div.find(".simple_attachments_add_file_div"));
+    var form = $("<form>").attr("method", "post").attr("action", div.attr("data-attachments-path")).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
+    $("<input>").attr("type", "hidden").attr("name", $("meta[name=csrf-param]").attr("content")).attr("value",  $("meta[name=csrf-token]").attr("content")).appendTo(form);
+    $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", div.attr("data-container-id")).appendTo(form);
+    $("<input>").attr("type", "hidden").attr("name", "container_model").attr("value", div.attr("data-container-model")).appendTo(form);
+    $("<input>").attr("type", "hidden").attr("name", "method").attr("value", div.attr("data-method")).appendTo(form);
+    input.bind("change", {div: div.get(0), form: form}, simple_attachments.createIframe);
+  },
+
+  createIframe: function(event) {
+    var input = event.currentTarget;
+    var div = event.data.div;
+    var form = event.data.form;
+    var iframe = $("<iframe>").attr("class", "simple_attachments_iframe");
+    input.off();
+    $("body").append(iframe);
+    input.appendTo(form);
+    div.trigger("create_input");
+    iframe.bind("load", event.data, simple_attachments.sendForm);
+  },
+  
+  sendForm: function(event) {
+    var iframe = event.currentTarget;
+    var div = event.data.div;
+    var form = event.data.form;
+    iframe.off();
+    form.appendTo(iframe.contents().find("body"));
+    form.submit();
+    iframe.bind("load", {field: div.giveField()}, simple_attachments.receiveForm);
+  },
+  
+  receiveForm: function(event) {
+    var iframe = event.currentTarget;
+    var field = event.data.field;
+    var answer = $.parseJSON(iframe.contents().find("body").text());
+    var data = answer.data;
+    if (answer.succeed)
+      field.trigger("uploaded", [data]);
+    else
+      field.trigger("failed", [data]);
+    iframe.remove();
   }
+
 }
 
 $(function() {
-  //For SimpleAttachmentsFormHelper multiple_file_field
+
   $(".simple_attachments_multiple_div").each(function() {
-    this.newField_pt = function() {
-      var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_][]";
-      var destroy = $(this).attr("destroy") == 'true' ? true : false;
-      return simple_attachments.newField_pt(this, input_name, destroy);
+    this.input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_][]";
+    this.giveField = function() {
+      this.createField();
     }
-    this.addInput = function() {
-      var container_model = $(this).attr("data-container-model");
-      var container_id = $(this).attr("data-container-id");
-      var method = $(this).attr("data-method");
-      var attachments_path = $(this).attr("data-attachments-path");
-      simple_attachments.addInput_pt(this, container_model, container_id, method, attachments_path, function(object) {
-        return object.newField_pt();
-      });
-    }
-    //Init engine with optional data
-    var data = $.parseJSON($(this).attr("data-other"));
-    this.init(data);
-    //Create first input field
-    this.addInput();
-    //Show already added attachments
-    var attached = $.parseJSON($(this).attr("data-attached"));
-    for (i in attached) {
-      var data = attached[i];
-      var field = this.newField_pt();
-      field.setData_pt(attached[i]);
+    this.loadAttached = function(attached) {
+     for (i in attached) {
+       var data = attached[i];
+       var field = this.createField();
+       field.trigger("uploaded", [attached[i]]);
+     }
     }
   });
-  //For SimpleAttachmentsTagHelper file_tag
-//   $(".simple_attachments_singelton_div").each(function() {
-//     $(this).newField_pt = function() {
-//       var input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"][]";
-//       return simple_attachments.newField_pt(this, input_name, true);
-//     }
-//     this.addInput = function() {
-//       var container_model = $(this).attr("data-container-model");
-//       var container_id = $(this).attr("data-container-id");
-//       var attachments_path = $(this).attr("data-attachments-path");
-//       simple_attachments.addInput(this, container_model, container_id, attachments_path, function(object) {
-//         var field = object.find(".simple_attachments_field_div");
-//         if (field.length) {
-//           field = field.get(0);
-//         }else{
-//           field = this.newField_pt();
-//         }
-//         return field;
-//       });
-//     }
-//     //Init engine with optional data
-//     var data = $.parseJSON($(this).attr("data-other"));
-//     this.init(data);
-//     //Create first input field
-//     this.addInput();
-//     //Show already added attachment
-//     var attached = $.parseJSON($(this).attr("data-attached"));
-//     if (attached.length) {
-//       var data = attached[0];
-//       var field = this.newField_pt();
-//       field.setData_pt(attached[0]);
-//     }
-//   });
+  
+  $(".simple_attachments_singleton_div").each(function() {
+    this.input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_]";
+    this.giveField = function() {
+      var field = $(this).find(".simple_attachments_field_div");
+      if (field.length)
+        field = field;
+      else
+        field = this.createField();
+      return field;
+    }
+    this.loadAttached = function(attached) {
+      if (attached) {
+        var field = this.createField();
+        field.trigger("uploaded", [attached]);
+      }
+    }
+  });
+
+  $(".simple_attachments_div").each(function() {
+    var attached = $.parseJSON($(this).attr("data-attached"));
+    this.options = $.parseJSON($(this).attr("data-options"));
+    this.createField = function() {
+      var field = $("<div>").attr("class", "simple_attachments_field_div");
+      this.newField(field);
+      field.bind("uploaded", {options: this.options}, simple_attachments.setFieldsData);
+    }
+    this.bind("create_input", simple_attachments.createInput);
+    this.init();
+    this.loadAttached(attached);
+    this.trigger("create_input");
+  });
+
 });
