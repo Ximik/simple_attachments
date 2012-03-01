@@ -1,1 +1,3 @@
-require '../../lib/simple_attachments.rb'
+Dir.chdir('../../lib') do
+  require 'simple_attachments.rb'
+end

@@ -5,16 +5,20 @@ module SimpleAttachments
     #
     # Allowed +options+
     #
+    # [:text]            Text in the add button.
+    # [:id]              Main div id.
     # [:can_destroy]     Show destroy link.
     # [:can_create]      Show add button.
-    # [:readonly]        Just sets both :can_destroy and :can_create. True by default.
+    # [:readonly]        Just sets both :can_destroy and :can_create (with not). True by default.
     # [:destroy_remote]  Destroy the attachment on the server after clicking the destroy link.
     # [:auto_associate]  Associate uploaded file with container at once. Also sets :destroy_remote if havn't set. True by default.
 
-    def self.helper(type, template, object, object_name, method, text, options)
+    def self.helper(type, template, object, object_name, method, options)
+      text = options.delete :text
+      id = options.delete :id
       options[:readonly] = false if options[:readonly].nil?
-      options[:can_destroy] ||= options[:readonly]
-      options[:can_create] ||= options[:readonly]
+      options[:can_destroy] ||= !options[:readonly]
+      options[:can_create] ||= !options[:readonly]
       options.delete :readonly
       options[:auto_associate] ||= true if options[:auto_associate].nil?
       container_id = (options[:auto_associate] ? object.id : nil)
@@ -30,6 +34,7 @@ module SimpleAttachments
       template.content_tag(:div,
                             template.content_tag(:div, text, :class => 'simple_attachments_add_file_div'),
                             :class => "simple_attachments_div simple_attachments_#{type}_div",
+                            :id => id,
                             :data => {:container_model => object_name,
                                       :container_id => container_id,
                                       :method => method,
@@ -42,36 +47,36 @@ module SimpleAttachments
 
     module FormHelper
 
-      def singleton_file(method, text='', options={})
-        helper(:singleton, object, method, text, options)
+      def singleton_file(method, options={})
+        helper(:singleton, method, options)
       end
 
-      def multiple_files(method, text='', options={})
-        helper(:multiple, object, method, text, options)
+      def multiple_files(method, options={})
+        helper(:multiple, method, options)
       end
 
       private
 
-      def helper(type, method, text, options) # :nodoc:
-        ViewHelpers.helper(type, template, object, object_name, method, text, options)
+      def helper(type, method, options) # :nodoc:
+        ViewHelpers.helper(type, @template, object, object_name, method, options)
       end
 
     end
 
     module TagHelper
 
-      def singleton_file_tag(object, method, text='', options={})
-        helper(:singleton, object, method, text, options)
+      def singleton_file_tag(object, method, options={})
+        helper(:singleton, object, method, options)
       end
 
-      def multiple_files_tag(object, method, text='', options={})
-        helper(:multiple, object, method, text, options)
+      def multiple_files_tag(object, method, options={})
+        helper(:multiple, object, method, options)
       end
 
       private
 
-      def helper(type, object, method, text, options) # :nodoc:
-        ViewHelpers.helper(type, self, object, object.class.to_s.underscore, method, text, options)
+      def helper(type, object, method, options) # :nodoc:
+        ViewHelpers.helper(type, self, object, object.class.to_s.underscore, method, options)
       end
 
     end

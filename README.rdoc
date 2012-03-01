@@ -25,7 +25,7 @@ You can find this app in spec/app.
   class CreateAvatars < ActiveRecord::Migration
     def change
       create_table :avatars do |t|
-        t.integer :avatar_id, :null => true 
+        t.references :avatar, :null => true 
         t.attachment
       end
     end
@@ -34,7 +34,7 @@ You can find this app in spec/app.
   class CreateDocuments < ActiveRecord::Migration
     def change
       create_table :documents do |t|
-        t.integer :avatar_id, :null => true 
+        t.references :avatar, :null => true  
         t.attachment
       end
     end

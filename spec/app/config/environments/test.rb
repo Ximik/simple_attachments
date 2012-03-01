@@ -1,10 +1,11 @@
 App::Application.configure do
-  # Disable request forgery protection in test environment
-  config.action_controller.allow_forgery_protection = false
-
-  # Raise exception on mass assignment protection for Active Record models
-  config.active_record.mass_assignment_sanitizer = :strict
-
-  # Print deprecation notices to the stderr
+  config.encoding = 'utf-8'
+  config.cache_classes = true
+  config.whiny_nils = true
+  config.action_controller.perform_caching = false
+  config.action_dispatch.show_exceptions = false
+  config.action_controller.allow_forgery_protection = true
   config.active_support.deprecation = :stderr
+  config.assets.enabled = true
+  config.assets.version = '1.0'
 end
