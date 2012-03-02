@@ -1,3 +1,3 @@
-class AvatarController < ApplicationController
+class AvatarsController < ApplicationController
   attachment_controller
 end

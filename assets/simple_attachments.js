@@ -1,26 +1,32 @@
 var simple_attachments = {
   getCSRF: function() {
-    return {name: $("meta[name=csrf-param]").attr("content"), value: $("meta[name=csrf-token]").attr("content")}
+    var name = $("meta[name=csrf-param]");
+    var value = $("meta[name=csrf-token]");
+    name = (name.length ? name.attr("content") : "authenticity_token");
+    value = (value.length ? value.attr("content") : "");
+    return {name: name, value: value}
   },
 
   setFieldsData: function(event, data) {
     var field = $(event.currentTarget);
     var div = event.data.div;
     var options = div.options;
-    data.hidden_input = $("<input>").attr("type", "hidden").attr("name", div.input_name).attr("value", data.id);
+    $("<input>").attr("type", "hidden").attr("name", div.input_name).attr("value", data.id).appendTo(field);
     data.destroy_link = null;
     if (options.can_destroy) {
-      data.destroy_link = $("<a>").attr("class", "simple_attachments_destroy").attr("href", data.filepath);
+      data.destroy_link = $("<a>").attr("class", "simple_attachments_destroy_link").attr("href", data.filepath);
       data.destroy_link.bind("click", {field: field, destroy_remote: options.destroy_remote}, function(event) {
         if (event.data.destroy_remote) {
-          var csrf = getCSRF();
-          $.post(this.href, {_method: "delete", csrf.name: csrf.value});
+          var csrf = simple_attachments.getCSRF();
+          var post = {_method: "delete"};
+          post[csrf.name] = csrf.value;
+          $.post(this.href, post);
         }
         event.data.field.remove();
         return false;
       });
     }
-    data.options = options;
+    data.attachment_link = $("<a>").attr("class", "simple_attachments_attachment_link").attr("href", data.filepath);
     data.div = div;
     field.trigger("loaded", [data]);
   },
@@ -30,7 +36,7 @@ var simple_attachments = {
     var input = $("<input>").attr("type", "file").attr("class", "simple_attachments_input").attr("name", "file");
     input.appendTo(div.find(".simple_attachments_add_file_div"));
     var form = $("<form>").attr("method", "post").attr("action", div.attr("data-attachments-path")).attr("enctype", "multipart/form-data").attr("accept-charset", "UTF-8");
-    var csrf = getCSRF();
+    var csrf = simple_attachments.getCSRF();
     $("<input>").attr("type", "hidden").attr("name", csrf.name).attr("value", csrf.value).appendTo(form);
     $("<input>").attr("type", "hidden").attr("name", "container_id").attr("value", div.attr("data-container-id")).appendTo(form);
     $("<input>").attr("type", "hidden").attr("name", "container_model").attr("value", div.attr("data-container-model")).appendTo(form);
@@ -64,11 +70,11 @@ var simple_attachments = {
     var iframe = $(event.currentTarget);
     var field = event.data.field;
     var answer = $.parseJSON(iframe.contents().find("body").text());
-    var data = answer.data;
+    var data = [answer.data];
     if (answer.succeed)
-      field.trigger("uploaded", [data]);
+      field.trigger("uploaded", data);
     else
-      field.trigger("failed", [data]);
+      field.trigger("failed", data);
     iframe.remove();
   }
 
@@ -110,12 +116,12 @@ $(function() {
     this.options = $.parseJSON($(this).attr("data-options"));
     this.createField = function() {
       var field = $("<div>").attr("class", "simple_attachments_field_div");
-      this.newField(field);
       field.bind("uploaded", {div: this}, simple_attachments.setFieldsData);
+      $(this).trigger("new_field", [field]);
       return field;
     }
     $(this).bind("create_input", simple_attachments.createInput);
-    this.init();
+    $(this).trigger("init");
     this.loadAttached(attached);
     if (this.options.can_create)
       $(this).trigger("create_input");
