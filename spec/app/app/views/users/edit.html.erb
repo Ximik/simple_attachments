@@ -1,6 +1,6 @@
 <%= form_for @user do |f| %>
-  <%= f.singleton_file :avatar, :auto_associate => false %>
+  <%= f.file :avatar, :auto_associate => false %>
   <%= f.submit %>
 <% end %>
 
-<%= multiple_files_tag @user, :documents, :text => 'Add document'%>
+<%= files_tag @user, :documents, :text => 'Add document'%>

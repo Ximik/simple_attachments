@@ -1,4 +1,5 @@
 var simple_attachments = {
+  
   getCSRF: function() {
     var name = $("meta[name=csrf-param]");
     var value = $("meta[name=csrf-token]");
@@ -71,10 +72,12 @@ var simple_attachments = {
     var field = event.data.field;
     var answer = $.parseJSON(iframe.contents().find("body").text());
     var data = [answer.data];
-    if (answer.succeed)
+    if (answer.succeed) {
       field.trigger("uploaded", data);
-    else
+    } else {
       field.trigger("failed", data);
+      field.remove();
+    }
     iframe.remove();
   }
 
@@ -99,9 +102,12 @@ $(function() {
   $(".simple_attachments_singleton_div").each(function() {
     this.input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_]";
     this.giveField = function() {
-      var field = $(this).find(".simple_attachments_field_div");
-      if (field.length) field = field.remove();
-      return this.createField();
+      var old_field = $(this).find(".simple_attachments_field_div");
+      var field = this.createField();
+      field.bind("uploaded", {old_field: old_field}, function(event) {
+        event.data.old_field.remove();
+      });
+      return field;
     }
     this.loadAttached = function(attached) {
       if (attached) {

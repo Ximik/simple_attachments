@@ -5,13 +5,15 @@ module SimpleAttachments
     #
     # Allowed +options+
     #
-    # [:text]            Text in the add button.
-    # [:id]              Main div id.
-    # [:can_destroy]     Show destroy link.
-    # [:can_create]      Show add button.
-    # [:readonly]        Just sets both :can_destroy and :can_create (with not). True by default.
-    # [:destroy_remote]  Destroy the attachment on the server after clicking the destroy link.
-    # [:auto_associate]  Associate uploaded file with container at once. Also sets :destroy_remote if havn't set. True by default.
+    # [:text]                   Text in the add button. [nil]
+    # [:id]                     Main div id. [nil]
+    # [:can_destroy]            Show destroy link. [true]
+    # [:can_create]             Show add button. [true]
+    # [:readonly]               Sets default values for :can_destroy and :can_create. [false]
+    # [:destroy_remote]         Destroy the attachment on the server after clicking the destroy link. [true]
+    # [:auto_associate]         Associate uploaded file with container at once. Also sets default value for :destroy_remote. [true]
+    #
+    # You can also specify any other options and then access them from JavaScript code.
 
     def self.helper(type, template, object, object_name, method, options)
       text = options.delete :text
@@ -30,6 +32,7 @@ module SimpleAttachments
       else
         attached = attached.serializable_hash unless attached.nil?
       end
+      options[:save_old] = true if options[:save_old].nil?
       attachments_path = template.send object.class.reflections[method].class_name.pluralize.underscore.concat('_path') #FIXME
       template.content_tag(:div,
                             template.content_tag(:div, text, :class => 'simple_attachments_add_file_div'),
@@ -47,11 +50,11 @@ module SimpleAttachments
 
     module FormHelper
 
-      def singleton_file(method, options={})
+      def file(method, options={})
         helper(:singleton, method, options)
       end
 
-      def multiple_files(method, options={})
+      def files(method, options={})
         helper(:multiple, method, options)
       end
 
@@ -65,11 +68,11 @@ module SimpleAttachments
 
     module TagHelper
 
-      def singleton_file_tag(object, method, options={})
+      def file_tag(object, method, options={})
         helper(:singleton, object, method, options)
       end
 
-      def multiple_files_tag(object, method, options={})
+      def files_tag(object, method, options={})
         helper(:multiple, object, method, options)
       end
 

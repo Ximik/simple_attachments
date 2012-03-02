@@ -62,7 +62,7 @@ module SimpleAttachments::AttachmentsController
     #
     #   skip_before_filter :load_attachment
 
-    def load_attachment
+    def load_attachment # :doc:
       @attachment = self.class.attachment_model.find params[:id]
     rescue
       raise ActionController::RoutingError.new('Not Found')
@@ -78,13 +78,13 @@ module SimpleAttachments::AttachmentsController
     #     super
     #   end
 
-    def associate(container, method)
+    def associate(container, method) # :doc:
       container.add_attachment method, self.class.attachment_model, self.id
     end
 
-    # Renders answer for javascript
+    # Renders answer for javascript.
 
-    def render_answer(succeed, data)
+    def render_answer(succeed, data) # :doc:
       render :text => {'succeed' => succeed, 'data' => data}.to_json
     end
 

@@ -31,7 +31,7 @@ module SimpleAttachments::AttachmentModel
     #
     #   validates_mimetype %w(image/png image/gif image/jpeg), :message => 'should be an image'
     #
-    # +:message+ is optional.
+    # :message is optional.
 
     def validates_mimetype(types, options = {})
       options[:message] ||= I18n.t('simple_attachments.mimetype_isnt_allowed')
@@ -42,7 +42,7 @@ module SimpleAttachments::AttachmentModel
     #
     #   validates_filesize :less_than_or_equal_to => 12e6, :message => 'file is too large'
     #
-    # +:message+ is optional.
+    # :message is optional.
 
     def validates_filesize(options)
       options[:message] ||= I18n.t('simple_attachments.file_is_too_large')

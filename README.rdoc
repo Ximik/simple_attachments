@@ -25,7 +25,7 @@ You can find this app in spec/app.
   class CreateAvatars < ActiveRecord::Migration
     def change
       create_table :avatars do |t|
-        t.references :avatar, :null => true 
+        t.references :avatar, :null => true
         t.attachment
       end
     end
@@ -34,7 +34,7 @@ You can find this app in spec/app.
   class CreateDocuments < ActiveRecord::Migration
     def change
       create_table :documents do |t|
-        t.references :avatar, :null => true  
+        t.references :avatar, :null => true
         t.attachment
       end
     end
@@ -81,18 +81,51 @@ You can use a lot of options here. Just like with +has_one+, +has_many+ and +bel
 === View
 
   <%= form_for @user do |f| %>
-    <%= f.singleton_file :avatar, :auto_associate => false %>
+    <%= f.file :avatar, :auto_associate => false %>
   <% end %>
 
-  <%= multiple_files_tag @user, :documents %>
+  <%= files @user, :documents %>
 
 *WARNING*: you also need +csrf_meta_tags+ in your layout to work with +protect_from_forgery+ filter.
 
-=== Assets
+=== JavaScript
 
-You should somehow require simple_attachments.css and simple_attachments.js in your page.
+Plugin doesn't provide any implementation of the file appearance.
+Instead it triggers events, which are easy to handle. 
 
-*WARNING*: simple_attachments.js should be required after you specify newField function.
+  //= require_self
+  //= require simple_attachments
+
+  $(function() {
+    // Div is loaded and engine is ready.
+    $(".simple_attachments_div").bind("init", function() {
+      // You can add your own init features here.
+    });
+    // New field was created.
+    // Field is a div displaying attachment information.
+    $(".simple_attachments_div").bind("new_field", function(event, field) {
+      // You have to set field in the right place and add binds.
+      field.appendTo(this);
+      // Attachment was loaded
+      // data contains attachment properties and some little support variables
+      field.bind("loaded", function(event, data) {
+        // You have to create and/or set field content here
+        data.destroy_link.appendTo(this);
+        data.attachment_link.html(data.filename).appendTo(this);
+      });
+      // Attachment upload was failed
+      // errors is an array of strings
+      field.bind("failed", function(event, errors) {
+        // You can do something here before field would be deleted
+      });
+    });
+  });
+
+*WARNING*: +simple_attachments.js+ should be required after binds.
+
+=== CSS
+
++simple_attachments.css+ contains some code to hide default input, but it's not so necessary.
 
 ---
 
