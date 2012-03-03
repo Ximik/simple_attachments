@@ -14,5 +14,4 @@ Gem::Specification.new do |s|
 
   s.files = Dir.glob['lib/**/*', 'locales/*', 'vendor/**/*'] + %w(MIT-LICENSE README.rdoc)
   s.test_files = Dir.glob('test_app/**/*')
-  s.require_paths = %w(lib)
 end

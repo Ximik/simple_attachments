@@ -10,9 +10,9 @@ module JsModule
 
   DIR = File.expand_path(File.dirname(__FILE__))
 
-  def attach_sample(sample)
+  def attach_sample(sample, sleep_time = 2)
     attach_file 'file', File.join(DIR, 'samples', "sample.#{sample}")
-    sleep 2
+    sleep sleep_time
   end
 
 end

@@ -79,7 +79,7 @@ module SimpleAttachments::AttachmentsController
     #   end
 
     def associate(container, method) # :doc:
-      container.add_attachment method, self.class.attachment_model, self.id
+      container.add_attachment method, @attachment
     end
 
     # Renders answer for javascript.

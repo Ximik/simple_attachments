@@ -5,5 +5,13 @@
 .edit_user .simple_attachments_add_file_div {
   width: 100px;
   height: 100px;
+  background-color: #0f0;
 }
 
+.simple_attachments_destroy_link {
+  width: 10px;
+  height: 10px;
+  display: block;
+  float: left;
+  background-color: #f00;
+}

@@ -16,7 +16,7 @@ module SimpleAttachments::ContainerModel
         attachment_ids = attachment_ids.map { |id| id.to_i }
         model.destroy_all :id => (old_attachment_ids - attachment_ids)
         (attachment_ids - old_attachment_ids).each do |attachment_id|
-          add_attachment(method, model, attachment_id)
+          find_and_add_attachment(method, model, attachment_id)
         end
       end
       send :include, InstanceMethods
@@ -32,7 +32,7 @@ module SimpleAttachments::ContainerModel
       reflection = has_one name, options
       send(:define_method, reflection.name.to_s + '_=') do |attachment_id|
         method, model = recover_vars(__method__)
-        add_attachment(method, model, attachment_id)
+        find_and_add_attachment(method, model, attachment_id)
       end
       send :include, InstanceMethods
     end
@@ -41,10 +41,7 @@ module SimpleAttachments::ContainerModel
 
   module InstanceMethods
 
-    def add_attachment(method, model, attachment_id) # :nodoc:
-      attachment = model.find_by_id attachment_id
-      return if attachment.nil?
-      return if attachment.attached?
+    def add_attachment(method, attachment) # :nodoc:
       if reflections[method.to_sym].instance_variable_get :@collection
         send(method) << attachment
       else
@@ -60,6 +57,13 @@ module SimpleAttachments::ContainerModel
       method = method.to_s.chomp('_=')
       model = reflections[method.to_sym].klass
       [method, model]
+    end
+
+    def find_and_add_attachment(method, model, attachment_id) # :nodoc:
+      attachment = model.find_by_id attachment_id
+      return if attachment.nil?
+      return if attachment.attached?
+      add_attachment method, attachment
     end
 
   end

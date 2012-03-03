@@ -9,7 +9,7 @@ describe 'avatar', :type => :request, :js => true do
   let(:user) { User.create }
   before(:each) { visit edit_user_path(user) }
 
-  it 'should be uploaded but not associated' do
+  it 'should not be auto associated' do
     within '.edit_user' do
       attach_sample :jpg
       avatar = Avatar.last
@@ -18,7 +18,7 @@ describe 'avatar', :type => :request, :js => true do
     end
   end
 
-  it 'cannot be replaced by an invalid file' do
+  it 'should not be replaced by an invalid file' do
     within '.edit_user' do
       attach_sample :jpg
       avatar = Avatar.last
@@ -38,6 +38,16 @@ describe 'avatar', :type => :request, :js => true do
       click_button 'Update User'
       test_img new_avatar
       Avatar.exists?(avatar).should == false
+    end
+  end
+  
+  it 'should allow asynchronous upload' do
+    Avatar.destroy_all
+    within '.edit_user' do
+      5.times { attach_sample :jpg, 0 }
+      attach_sample :png
+      click_button 'Update User'
+      user.avatar.mimetype.should == 'image/png'
     end
   end
 
