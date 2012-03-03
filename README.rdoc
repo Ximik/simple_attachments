@@ -125,7 +125,7 @@ Instead it triggers events, which are easy to handle.
 
 === CSS
 
-+simple_attachments.css+ contains some code to hide default input, but it's not so necessary.
++simple_attachments.css+ contains some code to hide default input. So require it, but it's not so necessary.
 
 ---
 

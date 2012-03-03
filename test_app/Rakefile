@@ -1,0 +1,10 @@
+#!/usr/bin/env rake
+
+require File.expand_path('../config/application', __FILE__)
+App::Application.load_tasks
+
+require 'rspec/core/rake_task'
+task :default => :spec
+RSpec::Core::RakeTask.new do |t|
+  t.pattern = File.expand_path 'spec/*_spec.rb'
+end

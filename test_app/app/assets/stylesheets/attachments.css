@@ -1,0 +1,9 @@
+/*
+*= require simple_attachments
+*/
+
+.edit_user .simple_attachments_add_file_div {
+  width: 100px;
+  height: 100px;
+}
+
