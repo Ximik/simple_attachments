@@ -3,7 +3,7 @@
 Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.name         = 'simple_attachments'
-  s.version      = '0.1.0'
+  s.version      = '0.1.1'
   s.author       = 'Alex Tsokurov'
   s.email        = 'me@ximik.net'
   s.summary      = 'File attachments solution for Ruby on Rails 3'
@@ -17,5 +17,4 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.extra_rdoc_files << 'README.rdoc'
-  #s.rdoc_options << '--main' << 'README.rdoc'
 end
