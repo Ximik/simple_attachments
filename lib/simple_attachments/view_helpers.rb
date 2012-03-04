@@ -32,7 +32,7 @@ module SimpleAttachments
       else
         attached = attached.serializable_hash unless attached.nil?
       end
-      attachments_path = template.send object.class.reflections[method].class_name.pluralize.underscore.concat('_path') #FIXME
+      attachments_path = template.send object.class.reflections[method].class_name.pluralize.underscore.concat('_path')
       template.content_tag(:div,
                             template.content_tag(:div, text, :class => 'simple_attachments_add_file_div'),
                             :class => "simple_attachments_div simple_attachments_#{type}_div",

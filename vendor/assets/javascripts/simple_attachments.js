@@ -1,5 +1,5 @@
 var simple_attachments = {
-  
+
   getCSRF: function() {
     var name = $("meta[name=csrf-param]");
     var value = $("meta[name=csrf-token]");
@@ -56,7 +56,7 @@ var simple_attachments = {
     div.trigger("create_input");
     iframe.bind("load", event.data, simple_attachments.sendForm);
   },
-  
+
   sendForm: function(event) {
     var iframe = $(event.currentTarget);
     var div = event.data.div;
@@ -66,7 +66,7 @@ var simple_attachments = {
     form.submit();
     iframe.bind("load", {field: div.get(0).giveField()}, simple_attachments.receiveForm);
   },
-  
+
   receiveForm: function(event) {
     var iframe = $(event.currentTarget);
     var field = event.data.field;
@@ -98,7 +98,7 @@ $(function() {
      }
     }
   });
-  
+
   $(".simple_attachments_singleton_div").each(function() {
     this.input_name = $(this).attr("data-container-model")+"["+$(this).attr("data-method")+"_]";
     this.giveField = function() {
