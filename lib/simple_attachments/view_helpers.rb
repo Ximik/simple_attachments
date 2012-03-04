@@ -87,10 +87,6 @@ module SimpleAttachments
 end
 
 module ActionView # :nodoc:
-  class Helpers::FormBuilder # :nodoc:
-    include SimpleAttachments::ViewHelpers::FormHelper
-  end
-  class Base # :nodoc:
-    include SimpleAttachments::ViewHelpers::TagHelper
-  end
+  Helpers::FormBuilder.send :include, SimpleAttachments::ViewHelpers::FormHelper
+  Base.send :include, SimpleAttachments::ViewHelpers::TagHelper
 end

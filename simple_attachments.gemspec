@@ -7,11 +7,15 @@ Gem::Specification.new do |s|
   s.author       = 'Alex Tsokurov'
   s.email        = 'me@ximik.net'
   s.summary      = 'File attachments solution for Ruby on Rails 3'
+  s.homepage     = 'http://github.com/Ximik/simple_attachments'
 
-  s.required_ruby_version     = '>= 1.8.7'
-  s.required_rubygems_version = '>= 1.3.6'
-  s.add_development_dependencies %w(rspec-rails capybara)
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'capybara'
 
-  s.files = Dir.glob['lib/**/*', 'locales/*', 'vendor/**/*'] + %w(MIT-LICENSE README.rdoc)
-  s.test_files = Dir.glob('test_app/**/*')
+  s.files      = Dir.glob(['lib/**/*', 'locales/*', 'vendor/**/*']) + %w(MIT-LICENSE README.rdoc)
+  s.test_files = Dir.glob('test/**/*')
+
+  s.has_rdoc = true
+  s.extra_rdoc_files << 'README.rdoc'
+  #s.rdoc_options << '--main' << 'README.rdoc'
 end

@@ -3,7 +3,7 @@ class UsersController < ApplicationController
 
   def edit
   end
-  
+
   def update
     @user.update_attributes params[:user]
     @user.save

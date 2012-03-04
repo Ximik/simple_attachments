@@ -11,14 +11,14 @@ Also you need {jQuery library}[http://jquery.com/] to make JavaScript work.
 
 Add this to your Gemfile and run the +bundle+ command.
 
-  gem 'simple_attachments', :git => 'git://github.com/Ximik/simple_attachments.git'
+  gem 'simple_attachments'
 
 == Getting Started
 
 Let's say you have a +User+ which has one +Avatar+ and many +Document+.
-The avatar can be change from user edit form. Avatar data updates only after submiting the form.
-The documents can be managed separately with auto saving all changes in background.
-You can find this app in spec/app.
+The avatar can be change from user edit form. And the avatar data updates only after submiting the form.
+The documents are shown on the same page. They can be managed separately with auto saving all changes in background.
+You can find this app in +test+.
 
 === Migrations
 
@@ -91,7 +91,7 @@ You can use a lot of options here. Just like with +has_one+, +has_many+ and +bel
 === JavaScript
 
 Plugin doesn't provide any implementation of the file appearance.
-Instead it triggers events, which are easy to handle. 
+Instead it triggers events, which are easy to handle.
 
   //= require_self
   //= require simple_attachments

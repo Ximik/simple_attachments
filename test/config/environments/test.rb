@@ -4,7 +4,8 @@ App::Application.configure do
   config.whiny_nils = true
   config.action_controller.perform_caching = false
   config.action_dispatch.show_exceptions = false
-  config.action_controller.allow_forgery_protection = true
+  #config.action_controller.allow_forgery_protection = true
+  config.consider_all_requests_local = false
   config.active_support.deprecation = :stderr
   config.assets.enabled = true
   config.assets.version = '1.0'

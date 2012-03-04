@@ -16,12 +16,12 @@ describe 'documents', :type => :request, :js => true do
   end
 
   it 'should not show field with invalid file' do
-    within '.edit_user' do
+    within '.simple_attachments_multiple_div' do
       attach_sample :jpg
-      page.should have_selector('.simple_attachments_field_div')
+      page.should_not have_selector('.simple_attachments_field_div')
     end
   end
-  
+
   it 'should allow asynchronous upload and destroy' do
     within '.simple_attachments_multiple_div' do
       5.times { attach_sample :pdf, 0 }

@@ -54,7 +54,7 @@ module SimpleAttachments::AttachmentModel
   module InstanceMethods
 
     # Set file for attachment.
-    # +file+ is +ActionDispatch::Http::UploadedFile+ object
+    # +file+ is +UploadedFile+ object
 
     def file=(file)
       if file.nil?

@@ -18,6 +18,7 @@ module SimpleAttachments::AttachmentsController
       self.attachment_model = (options[:resource] or controller_path.classify.constantize)
       send :include, InstanceMethods
     end
+
   end
 
   module InstanceMethods
@@ -84,8 +85,12 @@ module SimpleAttachments::AttachmentsController
 
     # Renders answer for javascript.
 
-    def render_answer(succeed, data) # :doc:
+    def render_answer(succeed, data) # :nodoc:
       render :text => {'succeed' => succeed, 'data' => data}.to_json
+    end
+
+    def handle_unverified_request # :nodoc:
+      render :nothing => true
     end
 
   end
