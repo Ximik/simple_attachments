@@ -85,7 +85,7 @@ module SimpleAttachments::AttachmentModel
     # Save file in the filesystem.
 
     def save_file
-      File.open(full_file_path, 'w') { |file| file.write @file.read } unless @file.nil?
+      File.open(full_file_path, 'wb') { |file| file.write @file.read } unless @file.nil?
     rescue
       uploading_error
     end
